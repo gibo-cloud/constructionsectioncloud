@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Portal - Premium Access</title>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { 
+            /* 
+               Gumamit ng linear-gradient overlay para medyo dumilim ang picture
+               at lumitaw ang login box. Pagkatapos ay tinawag ang 3.jpg 
+            */
+            background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), url('3.jpg');
+            background-size: cover;          /* Pinalalaki/Pinaliliit ang picture para sumakto sa screen */
+            background-position: center;     /* Pinapanatili ang picture sa gitna */
+            background-repeat: no-repeat;    /* Iniiwasang mag-duplicate ang picture */
+            background-attachment: fixed;
+            height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        /* --- PREMIUM GLASSMORPHISM LOGIN BOX --- */
+        .login-box {
+            position: relative;
+            z-index: 1;
+            /* Mas pinalinaw na glass effect para bumagay sa background image */
+            background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 50px 40px; 
+            border-radius: 24px; 
+            width: 420px; 
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp { 
+            0% { opacity: 0; transform: translateY(30px); } 
+            100% { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- LOGOS & HEADERS --- */
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .logos-container img {
+            height: 65px; /* Medyo pinaliit dahil may malaking logo na sa background */
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .login-box h2 { 
+            font-size: 24px; margin-bottom: 8px; font-weight: 600; 
+            letter-spacing: 0.5px; 
+        }
+        .login-box p.subtitle {
+            font-size: 13px; color: #cbd5e1; margin-bottom: 30px;
+        }
+
+        /* --- INPUT FIELDS --- */
+        .input-group { 
+            position: relative; margin-bottom: 20px; text-align: left; 
+        }
+        
+        .input-group input {
+            width: 100%; padding: 16px 45px 16px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff; font-size: 15px; outline: none; transition: all 0.3s ease;
+        }
+        
+        .input-group input::placeholder { color: #94a3b8; }
+
+        .input-group input:focus { 
+            border-color: #f97316; 
+            background: rgba(0,0,0,0.5); 
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+        }
+        
+        .input-group i.icon-right { 
+            position: absolute; right: 18px; top: 50%; transform: translateY(-50%); 
+            color: #cbd5e1; font-size: 20px; transition: 0.3s; 
+        }
+        
+        .input-group input:focus ~ i.icon-right:not(.toggle-pass) { color: #f97316; }
+
+        .input-group i.toggle-pass { cursor: pointer; }
+        .input-group i.toggle-pass:hover { color: #ffffff; }
+
+        /* --- BUTTON --- */
+        .login-btn {
+            width: 100%; 
+            background: linear-gradient(135deg, #ea580c, #f97316); 
+            color: white; border: none;
+            padding: 16px; border-radius: 12px; font-size: 16px; cursor: pointer;
+            transition: all 0.3s ease; font-weight: 600; letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3);
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover { 
+            background: linear-gradient(135deg, #c2410c, #ea580c); 
+            box-shadow: 0 12px 25px rgba(234, 88, 12, 0.5); 
+            transform: translateY(-3px); 
+        }
+
+        .login-btn:active { transform: translateY(1px); }
+
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        
+        <!-- Pormal na lalagyan ng Logos -->
+        <div class="logos-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Department_of_Public_Works_and_Highways_%28DPWH%29.svg" alt="DPWH Logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Bagong_Pilipinas_logo.svg/1024px-Bagong_Pilipinas_logo.svg.png" alt="Bagong Pilipinas Logo">
+        </div>
+
+        <h2>Secure Portal</h2>
+        <p class="subtitle">Enter your credentials to access the system</p>
+        
+        <div id="loginForm">
+            <div class="input-group">
+                <input type="text" id="loginUser" placeholder="Username" required autocomplete="off">
+                <i class='bx bx-user icon-right'></i>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="loginPass" placeholder="Password" required>
+                <i class='bx bx-hide icon-right toggle-pass' id="eyeIcon" onclick="togglePassword()"></i>
+            </div>
+            
+            <button id="loginBtn" class="login-btn" onclick="handleLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = "dashboard.html";
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById('loginPass');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passInput.type === "password") {
+                passInput.type = "text"; 
+                eyeIcon.classList.replace('bx-hide', 'bx-show'); 
+                eyeIcon.style.color = "#f97316"; 
+            } else {
+                passInput.type = "password"; 
+                eyeIcon.classList.replace('bx-show', 'bx-hide'); 
+                eyeIcon.style.color = "#cbd5e1"; 
+            }
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+
+            if(user === "" || pass === "") {
+                const loginBox = document.querySelector('.login-box');
+                loginBox.style.animation = "none";
+                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
+                
+                alert("Pakiusap, ilagay ang iyong Username at Password.");
+                return;
+            }
+            
+            localStorage.setItem('isLoggedIn', 'true');
+            window.location.href = "dashboard.html";
+        }
+
+        document.getElementById("loginUser").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); 
+                document.getElementById("loginPass").focus(); 
+            }
+        });
+        
+        document.getElementById("loginPass").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>
