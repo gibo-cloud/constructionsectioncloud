@@ -1,9 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Portal - Premium Access</title>
+    <title>CBPMA Website</title>
+    
+    <!-- Idinagdag ang linyang ito para sa Favicon (Logo sa Tab) -->
+    <link rel="icon" href="logo.png" type="image/png">
     
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
@@ -16,35 +20,59 @@
         }
         
         body { 
-            /* 
-               Gumamit ng linear-gradient overlay para medyo dumilim ang picture
-               at lumitaw ang login box. Pagkatapos ay tinawag ang 3.jpg 
-            */
-            background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), url('3.jpg');
-            background-size: cover;          /* Pinalalaki/Pinaliliit ang picture para sumakto sa screen */
-            background-position: center;     /* Pinapanatili ang picture sa gitna */
-            background-repeat: no-repeat;    /* Iniiwasang mag-duplicate ang picture */
+            background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), url('3.png');
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
             background-attachment: fixed;
             height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
         }
 
-        /* --- PREMIUM GLASSMORPHISM LOGIN BOX --- */
+        /* --- PREMIUM GLASSMORPHISM LOGIN BOX W/ RUNNING LIGHT --- */
         .login-box {
             position: relative;
             z-index: 1;
-            /* Mas pinalinaw na glass effect para bumagay sa background image */
-            background: rgba(15, 23, 42, 0.4); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 50px 40px; 
+            padding: 15px 40px 40px 40px; 
             border-radius: 24px; 
             width: 420px; 
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); 
             color: #ffffff;
             animation: slideUp 0.8s ease-out;
+            overflow: hidden; 
+        }
+
+        /* Umiikot na ilaw sa likod (Running Light) */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent 70%, #f97316 80%, #ea580c 100%);
+            animation: rotateLight 3s linear infinite;
+            z-index: -2;
+        }
+
+        /* Inner glass background na pumapatong sa umiikot na ilaw */
+        .login-box::after {
+            content: '';
+            position: absolute;
+            inset: 2px; 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px; 
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+            z-index: -1;
+        }
+
+        @keyframes rotateLight {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes slideUp { 
@@ -52,27 +80,15 @@
             100% { opacity: 1; transform: translateY(0); } 
         }
 
-        /* --- LOGOS & HEADERS --- */
-        .logos-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .logos-container img {
-            height: 65px; /* Medyo pinaliit dahil may malaking logo na sa background */
-            width: auto;
+        /* --- MAIN LOGO INSIDE THE LOGIN BOX --- */
+        .main-logo {
+            width: 400px; 
+            max-width: 100%;
+            height: auto;
+            margin-top: 0;
+            margin-bottom: 10px; 
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-
-        .login-box h2 { 
-            font-size: 24px; margin-bottom: 8px; font-weight: 600; 
-            letter-spacing: 0.5px; 
-        }
-        .login-box p.subtitle {
-            font-size: 13px; color: #cbd5e1; margin-bottom: 30px;
+            border-radius: 12px; 
         }
 
         /* --- INPUT FIELDS --- */
@@ -130,14 +146,8 @@
 
     <div class="login-box">
         
-        <!-- Pormal na lalagyan ng Logos -->
-        <div class="logos-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Department_of_Public_Works_and_Highways_%28DPWH%29.svg" alt="DPWH Logo">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Bagong_Pilipinas_logo.svg/1024px-Bagong_Pilipinas_logo.svg.png" alt="Bagong Pilipinas Logo">
-        </div>
-
-        <h2>Secure Portal</h2>
-        <p class="subtitle">Enter your credentials to access the system</p>
+        <!-- Main App Logo -->
+        <img src="logo.png" alt="Main CBPMA Logo" class="main-logo">
         
         <div id="loginForm">
             <div class="input-group">
@@ -177,18 +187,25 @@
         function handleLogin() {
             const user = document.getElementById('loginUser').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
+            const loginBox = document.querySelector('.login-box');
 
             if(user === "" || pass === "") {
-                const loginBox = document.querySelector('.login-box');
                 loginBox.style.animation = "none";
                 setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
                 
                 alert("Pakiusap, ilagay ang iyong Username at Password.");
                 return;
             }
-            
-            localStorage.setItem('isLoggedIn', 'true');
-            window.location.href = "dashboard.html";
+
+            if (user === "Construction" && pass === "Dpwh2026") {
+                localStorage.setItem('isLoggedIn', 'true');
+                window.location.href = "dashboard.html";
+            } else {
+                loginBox.style.animation = "none";
+                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
+                
+                alert("Maling Username o Password. Pakisubukan muli.");
+            }
         }
 
         document.getElementById("loginUser").addEventListener("keypress", function(event) {
