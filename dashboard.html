@@ -1,51 +1,319 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBPMA Website</title>
-    
-    <!-- Idinagdag ang linyang ito para sa Favicon (Logo sa Tab) -->
+    <title>CBPMA Official Website</title>
     <link rel="icon" href="logo.png" type="image/png">
-    
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.replace("index.html");
+        }
+    </script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            font-family: 'Poppins', sans-serif; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
         body { 
-            background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), url('3.png');
-            background-size: cover;          
-            background-position: center;     
-            background-repeat: no-repeat;    
-            background-attachment: fixed;
-            height: 100vh; width: 100vw;
-            display: flex; justify-content: center; align-items: center;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f4f6f9;
+        }
+
+        /* --- LEFT SIDEBAR --- */
+        .sidebar-container {
+            width: 380px; 
+            background-color: #f39c12; 
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #14376a; 
+            z-index: 10;
+            overflow-y: auto; 
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background-color: #1a4a8d; 
+            color: white;
+            padding: 15px 20px 35px 20px; 
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            position: relative;
+            border-bottom: 2px solid #f39c12; 
+        }
+        
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a4a8d;
+            font-weight: bold;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-details .welcome {
+            font-size: 12px;
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: -2px;
+            display: block;
+        }
+
+        .user-details .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffd700; 
+            line-height: 1.2;
+            margin-bottom: 3px;
+        }
+
+        .user-details .office {
+            font-size: 11px;
+            line-height: 1.2;
+            opacity: 0.9;
+        }
+
+        .sign-out-btn {
+            position: absolute;
+            bottom: 8px; 
+            right: 15px;
+            color: white;
+            font-size: 12px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .sign-out-btn:hover { color: #e74c3c; }
+
+        /* Search Panel */
+        .search-panel {
+            margin: 15px;
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-header {
+            background-color: #1a4a8d;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .search-body {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        .search-input-group {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             overflow: hidden;
         }
 
-        /* --- PREMIUM GLASSMORPHISM LOGIN BOX W/ RUNNING LIGHT --- */
-        .login-box {
-            position: relative;
-            z-index: 1;
-            padding: 15px 40px 40px 40px; 
-            border-radius: 24px; 
-            width: 420px; 
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); 
-            color: #ffffff;
-            animation: slideUp 0.8s ease-out;
-            overflow: hidden; 
+        .search-input-group input {
+            flex: 1;
+            padding: 8px 10px;
+            border: none;
+            outline: none;
+            font-size: 13px;
         }
 
-        /* Umiikot na ilaw sa likod (Running Light) */
-        .login-box::before {
+        .search-input-group button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .search-input-group button:hover {
+            background-color: #2980b9;
+        }
+
+        .contract-info-card {
+            background: #1a4a8d; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 6px; 
+            padding: 20px; 
+            margin: 0 15px 20px 15px; 
+            display: none; 
+            color: white;
+        }
+
+        .info-group { margin-bottom: 15px; }
+        .info-group label { display: block; font-size: 12px; color: #f39c12; font-weight: 600; margin-bottom: 2px; }
+        .info-group .info-value { font-size: 13px; color: #ffffff; font-weight: 400; line-height: 1.4; }
+
+        .action-buttons { display: flex; gap: 8px; margin-top: 20px; }
+        .action-buttons a {
+            flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff; padding: 8px; border-radius: 4px; font-size: 13px; cursor: pointer;
+            transition: all 0.3s ease; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 5px;
+            text-decoration: none;
+        }
+        .action-buttons a:hover { background: #f39c12; border-color: #f39c12; color: #1a4a8d; transform: translateY(-2px); }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            height: 55px;
+            background-color: #1a4a8d;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 2px solid #14376a;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            background-color: transparent;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 15px 10px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #ffffff;
+            min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 200;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f1f1;
+            transition: 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f4f6f9;
+            color: #1a4a8d;
+            padding-left: 20px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .content-area {
+            flex: 1;
+            position: relative;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.85; 
+        }
+
+        /* =========================================
+           MODALS (GLASS PREMIUM W/ RUNNING LIGHT)
+           ========================================= */
+
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.5); 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        .modal-box {
+            position: relative;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 35px 25px 25px 25px; 
+            border-radius: 14px; 
+            width: 350px; 
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            color: white;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .modal-box::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -57,16 +325,12 @@
             z-index: -2;
         }
 
-        /* Inner glass background na pumapatong sa umiikot na ilaw */
-        .login-box::after {
+        .modal-box::after {
             content: '';
             position: absolute;
             inset: 2px; 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 22px; 
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.92); 
+            border-radius: 12px; 
             z-index: -1;
         }
 
@@ -75,150 +339,1089 @@
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes slideUp { 
-            0% { opacity: 0; transform: translateY(30px); } 
-            100% { opacity: 1; transform: translateY(0); } 
+        .modal-share-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f39c12;
+            color: #1a4a8d;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
         }
 
-        /* --- MAIN LOGO INSIDE THE LOGIN BOX --- */
-        .main-logo {
-            width: 400px; 
-            max-width: 100%;
-            height: auto;
-            margin-top: 0;
-            margin-bottom: 10px; 
+        .modal-share-btn:hover {
+            background: #e67e22;
+            color: #ffffff;
+        }
+
+        .modal-close {
+            position: absolute; 
+            top: 12px; 
+            right: 18px; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: #a0aec0;
+            transition: 0.3s;
+            z-index: 5;
+        }
+
+        .modal-close:hover { color: #ffffff; }
+
+        .modal-buttons {
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button,
+        .modal-buttons a.year-link-btn {
+            padding: 12px; 
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            color: white; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            text-decoration: none;
+            display: block;
+        }
+
+        .modal-buttons button:hover,
+        .modal-buttons a.year-link-btn:hover { 
+            background: #f39c12; 
+            color: #1a4a8d; 
+            border-color: #f39c12;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+
+        .folder-modal-box {
+            width: 420px !important;
+            text-align: left !important;
+        }
+
+        .folder-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .folder-item {
+            position: relative;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .folder-tab {
+            width: 120px;
+            height: 12px;
+            background: rgba(243, 156, 18, 0.7);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-left: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .folder-body {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            border-top-left-radius: 0;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .folder-body i {
+            font-size: 24px;
+            color: #f39c12;
+            transition: transform 0.3s ease;
+        }
+
+        .folder-item:hover .folder-body {
+            background: rgba(243, 156, 18, 0.15);
+            border-color: #f39c12;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.25);
+        }
+
+        .folder-item:hover .folder-tab {
+            background: #f39c12;
+        }
+
+        #defaultSidebar { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        #claimsSidebar, #monitoringSidebar, #shareSidebar, #dpwhSidebar { display: none; width: 100%; height: 100%; color: #333; }
+
+        .claims-header {
+            background-color: #1a4a8d; 
+            color: white;
+            padding: 20px; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #f39c12;
+        }
+
+        .back-icon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-icon-btn:hover { background: #f39c12; border-color: #f39c12; color: #1a4a8d; }
+
+        .claims-header-text h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffd700; 
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .claims-header-text span { font-size: 11px; color: #ffffff; opacity: 0.9; }
+
+        .claims-menu-container { padding: 20px; flex: 1; overflow-y: auto; }
+        .claims-menu { list-style: none; padding: 0; margin: 0; }
+        .claims-menu > li { margin-bottom: 8px; }
+
+        .menu-header, a.menu-header {
+            background: #ffffff;
+            color: #1a4a8d;
+            padding: 12px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .menu-header:hover, a.menu-header:hover { 
+            background: #1a4a8d; 
+            color: #ffffff;
+            transform: translateX(3px);
+        }
+
+        .menu-header-left { display: flex; align-items: center; gap: 8px; }
+        .dropdown-icon { transition: transform 0.3s ease; }
+        .menu-header.active .dropdown-icon { transform: rotate(180deg); }
+
+        .dropdown-list {
+            list-style: none;
+            padding: 5px 0 5px 15px;
+            display: none; 
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .dropdown-list li a {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .dropdown-list li a:hover {
+            background: #fff;
+            color: #1a4a8d;
+            border-left: 3px solid #1a4a8d;
+            font-weight: 500;
+        }
+
+        .robot-btn {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 2s ease-in-out infinite;
+            text-decoration: none;
+            position: relative;
+        }
+        .robot-btn img {
+            width: 35px;
+            height: 35px;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-            border-radius: 12px; 
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
-        /* --- INPUT FIELDS --- */
-        .input-group { 
-            position: relative; margin-bottom: 20px; text-align: left; 
-        }
-        
-        .input-group input {
-            width: 100%; padding: 16px 45px 16px 20px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2); 
-            background: rgba(0, 0, 0, 0.3);
-            color: #ffffff; font-size: 15px; outline: none; transition: all 0.3s ease;
-        }
-        
-        .input-group input::placeholder { color: #94a3b8; }
-
-        .input-group input:focus { 
-            border-color: #f97316; 
-            background: rgba(0,0,0,0.5); 
-            box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
-        }
-        
-        .input-group i.icon-right { 
-            position: absolute; right: 18px; top: 50%; transform: translateY(-50%); 
-            color: #cbd5e1; font-size: 20px; transition: 0.3s; 
-        }
-        
-        .input-group input:focus ~ i.icon-right:not(.toggle-pass) { color: #f97316; }
-
-        .input-group i.toggle-pass { cursor: pointer; }
-        .input-group i.toggle-pass:hover { color: #ffffff; }
-
-        /* --- BUTTON --- */
-        .login-btn {
-            width: 100%; 
-            background: linear-gradient(135deg, #ea580c, #f97316); 
-            color: white; border: none;
-            padding: 16px; border-radius: 12px; font-size: 16px; cursor: pointer;
-            transition: all 0.3s ease; font-weight: 600; letter-spacing: 1px;
-            box-shadow: 0 10px 20px rgba(234, 88, 12, 0.3);
-            margin-top: 10px;
-        }
-        
-        .login-btn:hover { 
-            background: linear-gradient(135deg, #c2410c, #ea580c); 
-            box-shadow: 0 12px 25px rgba(234, 88, 12, 0.5); 
-            transform: translateY(-3px); 
+        .robot-btn .robot-tooltip {
+            visibility: hidden;
+            background-color: #14376a;
+            color: #ffd700;
+            text-align: center;
+            border-radius: 4px;
+            padding: 6px 12px;
+            position: absolute;
+            z-index: 100;
+            top: 50%;
+            right: calc(100% + 15px);
+            left: auto;
+            transform: translateY(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid #f39c12;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
         }
 
-        .login-btn:active { transform: translateY(1px); }
+        .robot-btn .robot-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent #f39c12;
+        }
+
+        .robot-btn:hover .robot-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .sidebar-share-result {
+            background: #1a4a8d;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin: 0 15px 15px 15px;
+        }
+        .sidebar-share-result img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #f39c12;
+            object-fit: contain;
+            background: #fff;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .sidebar-share-result h3 { color: #ffd700; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
+        .sidebar-share-result p { font-size: 12px; margin-bottom: 15px; color: #e0e0e0; }
 
     </style>
 </head>
 <body>
 
-    <div class="login-box">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar-container">
         
-        <!-- Main App Logo -->
-        <img src="logo.png" alt="Main CBPMA Logo" class="main-logo">
-        
-        <div id="loginForm">
-            <div class="input-group">
-                <input type="text" id="loginUser" placeholder="Username" required autocomplete="off">
-                <i class='bx bx-user icon-right'></i>
+        <div id="defaultSidebar">
+            <div class="profile-section">
+                <div class="logo-placeholder">CBPMA</div>
+                <div class="user-details">
+                    <span class="welcome">Developed by:</span>
+                    <div class="name">GILBERT S. ANIEL</div>
+                   <div class="office">CLOUD-BASED PROJECT MANAGEMENT APPLICATION</div>
+                </div>
+                <a onclick="handleLogout()" class="sign-out-btn"><i class='bx bx-log-out-circle'></i> Sign Out</a>
+            </div>
+
+            <div class="search-panel">
+                <div class="search-header">Search</div>
+                <div class="search-body">
+                    <select class="search-select">
+                        <option>Contract ID</option>
+                    </select>
+                    <div class="search-input-group">
+                        <input type="text" id="searchInput" placeholder="Enter Contract ID">
+                        <button onclick="searchContract()"><i class='bx bx-search'></i> Go</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contract-info-card" id="card-25EI0001">
+                <div class="info-group">
+                    <label>Contract ID:</label>
+                    <div class="info-value">25EI0001</div>
+                </div>
+                <div class="info-group">
+                    <label>Contract Name:</label>
+                    <div class="info-value">Rehabilitation/Reconstruction of Roads with Slips, Slope Collapse and Landslide - Secondary Roads - Calapan South Rd - K0121+205 - K0121+250, K0121+437-K0121+457, K0124+577 - K0124+646</div>
+                </div>
+                <div class="info-group">
+                    <label>Project Engineer:</label>
+                    <div class="info-value">ROMEY, DIOSDADO V.</div>
+                </div>
+                <div class="info-group">
+                    <label>Contractor:</label>
+                    <div class="info-value">LUCKY SHINING STAR DEVELOPMENT CORP.</div>
+                </div>
+                <div class="action-buttons">
+                    <a href="https://drive.google.com/drive/u/1/folders/1-7P8MBjjuxBtBpLhQjm9hVh_DcKxl8wU"><i class='bx bx-folder'></i> Doc</a>
+                    <a href="https://drive.google.com/drive/u/1/folders/1-XtOJpG_atGD6tESPwU2V26P0bJZ1G-y"><i class='bx bx-cog'></i> Imp</a>
+                </div>
             </div>
             
-            <div class="input-group">
-                <input type="password" id="loginPass" placeholder="Password" required>
-                <i class='bx bx-hide icon-right toggle-pass' id="eyeIcon" onclick="togglePassword()"></i>
+            <div class="contract-info-card" id="card-25EI0002">
+                <div class="info-group">
+                    <label>Contract ID:</label>
+                    <div class="info-value">25EI0002</div>
+                </div>
+                <div class="info-group">
+                    <label>Contract Name:</label>
+                    <div class="info-value">name</div>
+                </div>
+                <div class="info-group">
+                    <label>Project Engineer:</label>
+                    <div class="info-value">pe</div>
+                </div>
+                <div class="info-group">
+                    <label>Contractor:</label>
+                    <div class="info-value">con</div>
+                </div>
+                <div class="action-buttons">
+                    <a href=""><i class='bx bx-folder'></i> Doc</a>
+                    <a href=""><i class='bx bx-cog'></i> Imp</a>
+                </div>
+            </div>
+            <div class="contract-info-card" id="card-25EI0003">
+                <div class="info-group">
+                    <label>Contract ID:</label>
+                    <div class="info-value">25EI0003</div>
+                </div>
+                <div class="info-group">
+                    <label>Contract Name:</label>
+                    <div class="info-value">name</div>
+                </div>
+                <div class="info-group">
+                    <label>Project Engineer:</label>
+                    <div class="info-value">pe</div>
+                </div>
+                <div class="info-group">
+                    <label>Contractor:</label>
+                    <div class="info-value">con</div>
+                </div>
+                <div class="action-buttons">
+                    <a href=""><i class='bx bx-folder'></i> Doc</a>
+                    <a href=""><i class='bx bx-cog'></i> Imp</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHARE FILES SIDEBAR -->
+        <div id="shareSidebar">
+            <div class="claims-header">
+                <button onclick="backToMainSidebar()" class="back-icon-btn" title="Back to Menu">
+                    <i class='bx bx-arrow-back'></i>
+                </button>
+                <div class="claims-header-text">
+                    <h2>SHARE FILES</h2>
+                    <span>Personnel Directory</span>
+                </div>
+            </div>
+
+            <div class="search-panel">
+                <div class="search-header">Search Colleague</div>
+                <div class="search-body">
+                    <div class="search-input-group">
+                        <input type="text" id="searchEmployeeInput" placeholder="Enter Name" oninput="checkEmptySearch(this)">
+                        <button onclick="searchEmployee()"><i class='bx bx-search'></i> Go</button>
+                    </div>
+                </div>
             </div>
             
-            <button id="loginBtn" class="login-btn" onclick="handleLogin()">Sign In</button>
+            <div id="shareResultContainer" style="display: none;"></div>
+        </div>
+
+        <!-- CLAIMS SIDEBAR -->
+        <div id="claimsSidebar">
+            <div class="claims-header">
+                <button onclick="backToMainSidebar()" class="back-icon-btn" title="Back to Menu">
+                    <i class='bx bx-arrow-back'></i>
+                </button>
+                <div class="claims-header-text">
+                    <h2>CONTRACT CLAIMS UINIT</h2>
+                    <span>Construction Section SMDEO</span>
+                </div>
+            </div>
+            
+            <div class="claims-menu-container">
+                <ul class="claims-menu">
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-votva')">
+                            <div class="menu-header-left"><i class='bx bx-file'></i> VOTVA</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-votva">
+                            <li><a href="#"><i class='bx bx-check-circle'></i> Scanned Documents (Checklist)</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-qau')">
+                            <div class="menu-header-left"><i class='bx bx-check-shield'></i> QAU</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-qau">
+                            <li><a href="#"><i class='bx bx-file-blank'></i> Memorandum</a></li>
+                            <li><a href="#"><i class='bx bx-search-alt-2'></i> Document During Inspection</a></li>
+                            <li><a href="#"><i class='bx bx-wrench'></i> Rectification Reports</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-coa')">
+                            <div class="menu-header-left"><i class='bx bx-building'></i> COA</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-coa">
+                            <li><a href="#"><i class='bx bx-file-blank'></i> Memorandum</a></li>
+                            <li><a href="#"><i class='bx bx-search-alt-2'></i> Documents During Inspection</a></li>
+                            <li><a href="#"><i class='bx bx-message-error'></i> Audit Observation Memorandum</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-da')">
+                            <div class="menu-header-left"><i class='bx bx-folder'></i> D.A</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-da">
+                            <li><a href="#"><i class='bx bx-file-blank'></i> Memorandum</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-cpes')">
+                            <div class="menu-header-left"><i class='bx bx-task'></i> CPES</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-cpes">
+                            <li><a href="#"><i class='bx bx-file-blank'></i> Memorandum</a></li>
+                            <li><a href="#"><i class='bx bx-search-alt-2'></i> Document During Inspection</a></li>
+                            <li><a href="#"><i class='bx bx-wrench'></i> Rectification Reports</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MONITORING & EVALUATION SIDEBAR -->
+        <div id="monitoringSidebar">
+            <div class="claims-header">
+                <button onclick="backToMainSidebar()" class="back-icon-btn" title="Back to Menu">
+                    <i class='bx bx-arrow-back'></i>
+                </button>
+                <div class="claims-header-text">
+                    <h2>MONITORING & EVALUATION UNIT</h2>
+                    <span>Construction Section SMDEO</span>
+                </div>
+            </div>
+            
+            <div class="claims-menu-container">
+                <ul class="claims-menu">
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-spreadsheet'></i> FORM-02</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-building-house'></i> BEFF</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-map-alt'></i> FMR</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-bar-chart-alt-2'></i> CMPD</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-list-ul'></i> BOQ & DUPA</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-file'></i> NS DO193 S. of 2016</div></a></li>
+                    <li><a href="#" class="menu-header"><div class="menu-header-left"><i class='bx bx-group'></i> Collaborative Report</div></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- DPWH SECTION SIDEBAR -->
+        <div id="dpwhSidebar">
+            <div class="claims-header">
+                <button onclick="backToMainSidebar()" class="back-icon-btn" title="Back to Menu">
+                    <i class='bx bx-arrow-back'></i>
+                </button>
+                <div class="claims-header-text">
+                    <h2>DPWH SECTION</h2>
+                    <span>Management & Units</span>
+                </div>
+            </div>
+            
+            <div class="claims-menu-container">
+                <ul class="claims-menu">
+                    
+                    <!-- 1. QA SECTION -->
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-dpwh-qa')">
+                            <div class="menu-header-left"><i class='bx bx-shield-quarter'></i> QA</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-dpwh-qa">
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-pouring')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-drop'></i> Pouring Permit</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-pouring">
+                                    <li><a href="https://example.com/request"><i class='bx bx-link-external'></i> Request</a></li>
+                                    <li><a href="https://example.com/approved"><i class='bx bx-link-external'></i> Approved</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-swactelog')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-book'></i> Swa CTE Logbook</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-swactelog">
+                                    <li><a href="#" onclick="openMonthModal('Swa CTE Logbook - 2024'); return false;"><i class='bx bx-calendar'></i> 2024</a></li>
+                                    <li><a href="#" onclick="openMonthModal('Swa CTE Logbook - 2025'); return false;"><i class='bx bx-calendar'></i> 2025</a></li>
+                                    <li><a href="#" onclick="openMonthModal('Swa CTE Logbook - 2026'); return false;"><i class='bx bx-calendar'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-mateng')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-hard-hat'></i> Materials Engineer</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-mateng">
+                                    <li><a href="https://example.com/me-2024"><i class='bx bx-file'></i> 2024</a></li>
+                                    <li><a href="https://example.com/me-2025"><i class='bx bx-file'></i> 2025</a></li>
+                                    <li><a href="https://example.com/me-2026"><i class='bx bx-file'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- 2. FINANCE SECTION -->
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-dpwh-finance')">
+                            <div class="menu-header-left"><i class='bx bx-wallet'></i> Finance</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-dpwh-finance">
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-approvedpaid')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-money'></i> Approved Paid Collection</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-approvedpaid">
+                                    <li><a href="#" onclick="openMonthModal('Approved Paid Collection - 2024'); return false;"><i class='bx bx-calendar'></i> 2024</a></li>
+                                    <li><a href="#" onclick="openMonthModal('Approved Paid Collection - 2025'); return false;"><i class='bx bx-calendar'></i> 2025</a></li>
+                                    <li><a href="#" onclick="openMonthModal('Approved Paid Collection - 2026'); return false;"><i class='bx bx-calendar'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-invors')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-box'></i> Inventory of ORS</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-invors">
+                                    <li><a href="https://example.com/ors-2024"><i class='bx bx-link-external'></i> 2024</a></li>
+                                    <li><a href="https://example.com/ors-2025"><i class='bx bx-link-external'></i> 2025</a></li>
+                                    <li><a href="https://example.com/ors-2026"><i class='bx bx-link-external'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="https://example.com/disbursement-rate" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px; border-radius: 4px; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+                                    <i class='bx bx-bar-chart'></i> Disbursement Rate
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- 3. PLANNING & DESIGN SECTION -->
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-dpwh-planning')">
+                            <div class="menu-header-left"><i class='bx bx-map-alt'></i> Planning & Design</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-dpwh-planning">
+                            <li><a href="https://example.com/planning-design-monitoring"><i class='bx bx-file-blank'></i> Planning & Design Section Monitoring</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- 4. PROCUREMENT UNIT -->
+                    <li>
+                        <div class="menu-header" onclick="toggleDropdown('list-dpwh-procurement')">
+                            <div class="menu-header-left"><i class='bx bx-cart'></i> Procurement Unit</div>
+                            <i class='bx bx-chevron-down dropdown-icon'></i>
+                        </div>
+                        <ul class="dropdown-list" id="list-dpwh-procurement">
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-noa')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-award'></i> NOA</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-noa">
+                                    <li><a href="https://example.com/noa-2024"><i class='bx bx-file'></i> 2024</a></li>
+                                    <li><a href="https://example.com/noa-2025"><i class='bx bx-file'></i> 2025</a></li>
+                                    <li><a href="https://example.com/noa-2026"><i class='bx bx-file'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="menu-header" onclick="toggleDropdown('list-keypersonnel')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
+                                    <div class="menu-header-left"><i class='bx bx-group'></i> Key Personnel</div>
+                                    <i class='bx bx-chevron-down dropdown-icon'></i>
+                                </div>
+                                <ul class="dropdown-list" id="list-keypersonnel">
+                                    <li><a href="https://example.com/kp-2024"><i class='bx bx-file'></i> 2024</a></li>
+                                    <li><a href="https://example.com/kp-2025"><i class='bx bx-file'></i> 2025</a></li>
+                                    <li><a href="https://example.com/kp-2026"><i class='bx bx-file'></i> 2026</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <!-- RIGHT MAIN AREA -->
+    <main class="main-wrapper">
+        <nav class="top-navbar">
+            
+            <a href="https://character.ai/chat/ZGiFdYF4BXI2Tlg5Pzt0wIo4x1AXcfH2gkfDh0HL9Xk" class="robot-btn">
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Robot">
+                <span class="robot-tooltip">Gibo AI Assistant</span>
+            </a>
+
+            <div class="dropdown">
+                <button class="dropbtn">Home <i class='bx bxs-down-arrow' style='font-size: 12px;'></i></button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openDatabaseModal(); return false;"><i class='bx bx-data'></i> Database</a>
+                    <a href="#" onclick="openProjectMonitoringModal(); return false;"><i class='bx bx-line-chart'></i> Project Monitoring</a>
+                    <a href="#" onclick="openDpwhSectionSidebar(); return false;"><i class='bx bx-buildings'></i> DPWH Section</a>
+                    <a href="#" onclick="openOthersModal(); return false;"><i class='bx bx-folder-open'></i> Other Files</a>
+                    <a href="#" onclick="openShareSidebar(); return false;"><i class='bx bx-share-alt'></i> Share Files</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content-area">
+            <video autoplay loop muted playsinline class="bg-video">
+                <source src="kiba.mp4" type="video/mp4">
+            </video>
+        </div>
+    </main>
+
+    <!-- ================= MODALS SECTION ================= -->
+
+    <!-- OTHERS MODAL POP-UP -->
+    <div id="othersModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeOthersModal()">&times;</span>
+            <h2>Others Section</h2>
+            <div class="modal-buttons">
+                <button onclick="openCshpYearModal()">CHSP Monitoring</button>
+                <button onclick="openContractAttachmentYearModal()">Contract Attachment</button>
+                <a href="https://example.com/pds-ipcr" class="year-link-btn">PDS- IPCR</a>
+            </div>
         </div>
     </div>
 
-    <script>
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = "dashboard.html";
-        }
+    <!-- CSHP MONITORING YEAR MODAL (2025-2026) -->
+    <div id="cshpYearModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeCshpYearModal()">&times;</span>
+            <h2>CHSP Monitoring - Select Year</h2>
+            <div class="modal-buttons">
+                <button onclick="openMonthModal('CHSP Monitoring - 2025')">2025</button>
+                <button onclick="openMonthModal('CHSP Monitoring - 2026')">2026</button>
+            </div>
+        </div>
+    </div>
 
-        function togglePassword() {
-            const passInput = document.getElementById('loginPass');
-            const eyeIcon = document.getElementById('eyeIcon');
-            
-            if (passInput.type === "password") {
-                passInput.type = "text"; 
-                eyeIcon.classList.replace('bx-hide', 'bx-show'); 
-                eyeIcon.style.color = "#f97316"; 
+    <!-- CONTRACT ATTACHMENT YEAR MODAL (2025-2026) -->
+    <div id="contractAttachmentYearModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeContractAttachmentYearModal()">&times;</span>
+            <h2>Contract Attachment - Select Year</h2>
+            <div class="modal-buttons">
+                <button onclick="openMonthModal('Contract Attachment - 2025')">2025</button>
+                <button onclick="openMonthModal('Contract Attachment - 2026')">2026</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATABASE MODAL POP-UP -->
+    <div id="databaseModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeDatabaseModal()">&times;</span>
+            <h2>Select Unit</h2>
+            <div class="modal-buttons">
+                <button onclick="openClaimsUnit()">Contract Claims Unit</button>
+                <button onclick="openMonitoringUnit()">Monitoring & Evaluation Unit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT MONITORING MODAL POP-UP -->
+    <div id="projectMonitoringModal" class="modal-overlay">
+        <div class="modal-box folder-modal-box">
+            <span class="modal-close" onclick="closeProjectMonitoringModal()">&times;</span>
+            <h2>Project Monitoring Sections</h2>
+            <div class="folder-container">
+                <a href="#" class="folder-item" onclick="openDocYearModal(); return false;">
+                    <div class="folder-tab"></div>
+                    <div class="folder-body">
+                        <i class='bx bx-folder-open'></i>
+                        <span>Project Documentation</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="folder-item" onclick="openImpYearModal(); return false;">
+                    <div class="folder-tab"></div>
+                    <div class="folder-body">
+                        <i class='bx bx-cog'></i>
+                        <span>Project Implementation</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="folder-item" onclick="openMonYearModal(); return false;">
+                    <div class="folder-tab"></div>
+                    <div class="folder-body">
+                        <i class='bx bx-line-chart'></i>
+                        <span>Project Monitoring & Evaluation</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- YEAR SELECTION MODAL: DOCUMENTATION -->
+    <div id="docYearModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeDocYearModal()">&times;</span>
+            <h2>Documentation - Select Year</h2>
+            <div class="modal-buttons">
+                <a href="https://docs.google.com/spreadsheets/d/14BBILbsOoQEM3t9g02PdpppqvSiH3KIkhkmC5MIeKAk/edit?gid=0#gid=0" class="year-link-btn">2024</a>
+                <a href="https://docs.google.com/spreadsheets/d/1lm4H4oGUOsOIqL20uSIpPWCMii6l12_-zH_crhOdCNw/edit?gid=0#gid=0" class="year-link-btn">2025</a>
+                <a href="https://docs.google.com/spreadsheets/d/1yMD0BmUV7dG35dk9v26UKf3XKNfY-9eiDLg8sZPvvEc/edit?gid=0#gid=0" class="year-link-btn">2026</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- YEAR SELECTION MODAL: IMPLEMENTATION -->
+    <div id="impYearModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeImpYearModal()">&times;</span>
+            <h2>Implementation - Select Year</h2>
+            <div class="modal-buttons">
+                <a href="https://docs.google.com/spreadsheets/d/14Mn0LNmv43RgqQH_3Vz4sTFyWrLPjSXQ08fL9WFSZSU/edit?gid=1116407896#gid=1116407896" class="year-link-btn">2024</a>
+                <a href="https://docs.google.com/spreadsheets/d/1viCNsR3X6SZduECw3TzW_QnO-MpvnZJc0g_eWco22nY/edit?gid=1116407896#gid=1116407896" class="year-link-btn">2026</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- YEAR SELECTION MODAL: MONITORING -->
+    <div id="monYearModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeMonYearModal()">&times;</span>
+            <h2>Monitoring - Select Year</h2>
+            <div class="modal-buttons">
+                <a href="https://docs.google.com/spreadsheets/d/14q_127mSM_mQ9e1v5_C0gkFQERk19HiWqgaPKzXcUsU/edit?gid=845755921#gid=845755921" class="year-link-btn">2025</a>
+                <a href="https://docs.google.com/spreadsheets/d/1Qc8WyplHKxFnYcuD5DDpaAcLGqZqiYeEWdZKv3QD8lY/edit?gid=845755921#gid=845755921" class="year-link-btn">2026</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MONTH POPUP MODAL -->
+    <div id="monthModal" class="modal-overlay">
+        <div class="modal-box" style="width: 420px;">
+            <span class="modal-close" onclick="closeMonthModal()">&times;</span>
+            <h2 id="monthModalTitle" style="font-size: 16px; margin-bottom: 15px; color: #ffd700;">Select Month</h2>
+            <div class="modal-buttons" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                <button onclick="goToMonthLink('January')">January</button>
+                <button onclick="goToMonthLink('February')">February</button>
+                <button onclick="goToMonthLink('March')">March</button>
+                <button onclick="goToMonthLink('April')">April</button>
+                <button onclick="goToMonthLink('May')">May</button>
+                <button onclick="goToMonthLink('June')">June</button>
+                <button onclick="goToMonthLink('July')">July</button>
+                <button onclick="goToMonthLink('August')">August</button>
+                <button onclick="goToMonthLink('September')">September</button>
+                <button onclick="goToMonthLink('October')">October</button>
+                <button onclick="goToMonthLink('November')">November</button>
+                <button onclick="goToMonthLink('December')">December</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.replace("index.html");
+        }
+        
+        function searchContract() {
+            const searchValue = document.getElementById('searchInput').value.trim().toUpperCase(); 
+            const allCards = document.querySelectorAll('.contract-info-card');
+            allCards.forEach(card => card.style.display = 'none');
+
+            if (searchValue === "") {
+                alert("Please enter a Contract ID.");
+                return;
+            }
+            const targetCard = document.getElementById('card-' + searchValue);
+            if (targetCard) {
+                targetCard.style.display = "block";
             } else {
-                passInput.type = "password"; 
-                eyeIcon.classList.replace('bx-show', 'bx-hide'); 
-                eyeIcon.style.color = "#cbd5e1"; 
+                alert("No project found");
             }
         }
 
-        function handleLogin() {
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
-            const loginBox = document.querySelector('.login-box');
+        function searchEmployee() {
+            const query = document.getElementById('searchEmployeeInput').value.trim().toUpperCase();
 
-            if(user === "" || pass === "") {
-                loginBox.style.animation = "none";
-                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
-                
-                alert("Pakiusap, ilagay ang iyong Username at Password.");
+            if (query === "") {
+                document.getElementById('shareResultContainer').style.display = 'none';
+                alert("Please enter a name.");
                 return;
             }
 
-            if (user === "Construction" && pass === "Dpwh2026") {
-                localStorage.setItem('isLoggedIn', 'true');
-                window.location.href = "dashboard.html";
+            let employeeFound = null;
+
+            if ("ALFREDO ENRIQUEZ JR".includes(query) || query.includes("ALFREDO")) {
+                employeeFound = { name: "ENRIQUEZ JR., ALFREDO J.", position: "Chief, Construction Section", img: "aje.png", link: "" };
+            } else if ("OLIVER WENDELL LLAET".includes(query) || query.includes("OLIVER")) {
+                employeeFound = { name: "LLAET, OLIVER WENDELL T.", position: "Engineer II", img: "1.png", link: "" };
+            } else if ("NOEL MENDOZA".includes(query) || query.includes("NOEL")) {
+                employeeFound = { name: "MENDOZA, NOEL M.", position: "Engineer II", img: "noel.png", link: "" };
+            } else if ("RONALD CHRISTIAN FERRERA".includes(query) || query.includes("RONALD")) {
+                employeeFound = { name: "FERRERA, RONALD CHRISTIAN L.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("DINKY JANE IBON ARIMADO".includes(query) || query.includes("DINKY")) {
+                employeeFound = { name: "IBON-ARIMADO, DINKY JANE", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("DIODADO ROMEY".includes(query) || query.includes("DIODADO") || query.includes("ROMEY")) {
+                employeeFound = { name: "ROMEY, DIODADO", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("ALMER FORTU".includes(query) || query.includes("ALMER")) {
+                employeeFound = { name: "FORTU, ALMER C.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("MARIA PATRICIA AMOR FAINA".includes(query) || query.includes("PATRICIA")) {
+                employeeFound = { name: "FAINA, MARIA PATRICIA AMOR F.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("MARY GRACE CASTILLO".includes(query) || (query.includes("MARY GRACE") && query.includes("CASTILLO"))) {
+                employeeFound = { name: "CASTILLO, MARY GRACE T.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("MARK ANGELO ABAGAT".includes(query) || query.includes("MARK ANGELO")) {
+                employeeFound = { name: "ABAGAT, MARK ANGELO F.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("PORTOSO CASTILLO JR".includes(query) || query.includes("PORTOSO")) {
+                employeeFound = { name: "CASTILLO JR., PORTOSO M.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("DANNAH CAE MORALES".includes(query) || query.includes("DANNAH")) {
+                employeeFound = { name: "MORALES, DANNAH CAE G.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("MARINELLE FETALSANA".includes(query) || query.includes("MARINELLE")) {
+                employeeFound = { name: "FETALSANA, MARINELLE R.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("JOE ED GONZALES".includes(query) || query.includes("JOE-ED") || query.includes("JOE ED")) {
+                employeeFound = { name: "GONZALES, JOE-ED G.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("JHOANNA CARLA RITO".includes(query) || query.includes("JHOANNA")) {
+                employeeFound = { name: "RITO, JHOANNA CARLA P.", position: "Project Development Officer II", img: "profile.png", link: "" };
+            } else if ("ABEGAIL MARQUEZ".includes(query) || query.includes("ABEGAIL")) {
+                employeeFound = { name: "MARQUEZ, ABEGAIL", position: "Project Development Officer II", img: "profile.png", link: "" };
+            } else if ("PATRISHA MADRONA".includes(query) || query.includes("PATRISHA")) {
+                employeeFound = { name: "MADRONA, PATRISHA C.", position: "Project Development Officer II", img: "profile.png", link: "" };
+            } else if ("JOMER HERNANDEZ".includes(query) || query.includes("JOMER")) {
+                employeeFound = { name: "HERNANDEZ, JOMER A.", position: "Engineer II", img: "profile.png", link: "" };
+            } else if ("GILBERT ANIEL".includes(query) || query.includes("GILBERT")) {
+                employeeFound = { name: "ANIEL, GILBERT S.", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("GODOFREDO RUBICO JR".includes(query) || query.includes("GODOFREDO")) {
+                employeeFound = { name: "RUBICO JR., GODOFREDO M.", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("MARY RUTH DE GUZMAN".includes(query) || query.includes("MARY RUTH")) {
+                employeeFound = { name: "DE GUZMAN, MARY RUTH O.", position: "Project Development Officer I", img: "profile.png", link: "" };
+            } else if ("RICHARD GADON".includes(query) || query.includes("RICHARD")) {
+                employeeFound = { name: "GADON, RICHARD B.", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("CHARLENE LARIRIT".includes(query) || query.includes("CHARLENE")) {
+                employeeFound = { name: "LARIRIT, CHARLENE", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("NORMAN PEREDA".includes(query) || query.includes("NORMAN")) {
+                employeeFound = { name: "PEREDA, NORMAN T.", position: "Project Development Officer II", img: "profile.png", link: "" };
+            } else if ("JULIET COLANGOY".includes(query) || query.includes("JULIET")) {
+                employeeFound = { name: "COLANGOY, JULIET", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("ROSANNI VILLANUEVA".includes(query) || query.includes("ROSANNI")) {
+                employeeFound = { name: "VILLANUEVA, ROSANNI P.", position: "Administrative Aide VI", img: "profile.png", link: "" };
+            } else if ("MARY GRACE GADON".includes(query) || (query.includes("MARY GRACE") && query.includes("GADON"))) {
+                employeeFound = { name: "GADON, MARY GRACE T.", position: "Administrative Aide II", img: "profile.png", link: "" };
+            } else if ("REZIEL QUIATCHON".includes(query) || query.includes("REZIEL")) {
+                employeeFound = { name: "QUIATCHON, REZIEL R.", position: "Administrative Aide IV", img: "profile.png", link: "" };
+            } else if ("MARY ANTOINETTE FAMINI".includes(query) || query.includes("ANTOINETTE")) {
+                employeeFound = { name: "FAMINI, MARY ANTOINETTE M.", position: "Administrative Aide IV", img: "profile.png", link: "" };
+            } else if ("ROCHELLE MONTAÑO".includes(query) || query.includes("ROCHELLE") || query.includes("MONTANO")) {
+                employeeFound = { name: "MONTAÑO, ROCHELLE F.", position: "Administrative Aide III", img: "profile.png", link: "" };
+            }
+
+            if (employeeFound) {
+                showSidebarResult(employeeFound);
             } else {
-                loginBox.style.animation = "none";
-                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
-                
-                alert("Maling Username o Password. Pakisubukan muli.");
+                alert("No personnel found matching that name.");
+                document.getElementById('shareResultContainer').style.display = 'none';
             }
         }
 
-        document.getElementById("loginUser").addEventListener("keypress", function(event) {
+        function checkEmptySearch(inputElement) {
+            if (inputElement.value.trim() === "") {
+                document.getElementById('shareResultContainer').style.display = 'none';
+            }
+        }
+
+        function showSidebarResult(emp) {
+            const container = document.getElementById('shareResultContainer');
+            container.innerHTML = `
+                <div class="sidebar-share-result">
+                    <img src="${emp.img}" alt="Profile Image">
+                    <h3>${emp.name}</h3>
+                    <p>${emp.position}</p>
+                    <a href="${emp.link}" class="modal-share-btn">Share to Me</a>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
+        function openShareSidebar() {
+            closeDatabaseModal();
+            closeOthersModal();
+            document.getElementById('defaultSidebar').style.display = 'none';
+            document.getElementById('claimsSidebar').style.display = 'none';
+            document.getElementById('monitoringSidebar').style.display = 'none';
+            document.getElementById('dpwhSidebar').style.display = 'none';
+            
+            document.getElementById('shareSidebar').style.display = 'flex';
+            document.getElementById('shareSidebar').style.flexDirection = 'column';
+        }
+
+        let currentYearSelected = "";
+        function openMonthModal(yearTitle) {
+            closeCshpYearModal();
+            closeContractAttachmentYearModal();
+            currentYearSelected = yearTitle;
+            document.getElementById('monthModalTitle').innerText = yearTitle;
+            document.getElementById('monthModal').style.display = 'flex';
+        }
+        function closeMonthModal() {
+            document.getElementById('monthModal').style.display = 'none';
+        }
+        function goToMonthLink(monthName) {
+            alert("Redirecting to " + currentYearSelected + " - " + monthName);
+            closeMonthModal();
+        }
+
+        function openOthersModal() { document.getElementById('othersModal').style.display = 'flex'; }
+        function closeOthersModal() { document.getElementById('othersModal').style.display = 'none'; }
+
+        function openCshpYearModal() {
+            closeOthersModal();
+            document.getElementById('cshpYearModal').style.display = 'flex';
+        }
+        function closeCshpYearModal() { document.getElementById('cshpYearModal').style.display = 'none'; }
+
+        function openContractAttachmentYearModal() {
+            closeOthersModal();
+            document.getElementById('contractAttachmentYearModal').style.display = 'flex';
+        }
+        function closeContractAttachmentYearModal() { document.getElementById('contractAttachmentYearModal').style.display = 'none'; }
+
+        function openDatabaseModal() { document.getElementById('databaseModal').style.display = 'flex'; }
+        function closeDatabaseModal() { document.getElementById('databaseModal').style.display = 'none'; }
+        
+        function openProjectMonitoringModal() { document.getElementById('projectMonitoringModal').style.display = 'flex'; }
+        function closeProjectMonitoringModal() { document.getElementById('projectMonitoringModal').style.display = 'none'; }
+
+        function openDocYearModal() { closeProjectMonitoringModal(); document.getElementById('docYearModal').style.display = 'flex'; }
+        function closeDocYearModal() { document.getElementById('docYearModal').style.display = 'none'; }
+
+        function openImpYearModal() { closeProjectMonitoringModal(); document.getElementById('impYearModal').style.display = 'flex'; }
+        function closeImpYearModal() { document.getElementById('impYearModal').style.display = 'none'; }
+
+        function openMonYearModal() { closeProjectMonitoringModal(); document.getElementById('monYearModal').style.display = 'flex'; }
+        function closeMonYearModal() { document.getElementById('monYearModal').style.display = 'none'; }
+
+        function openClaimsUnit() {
+            closeDatabaseModal(); 
+            document.getElementById('defaultSidebar').style.display = 'none';
+            document.getElementById('monitoringSidebar').style.display = 'none';
+            document.getElementById('shareSidebar').style.display = 'none';
+            document.getElementById('dpwhSidebar').style.display = 'none';
+            document.getElementById('claimsSidebar').style.display = 'flex'; 
+            document.getElementById('claimsSidebar').style.flexDirection = 'column';
+        }
+
+        function openMonitoringUnit() {
+            closeDatabaseModal();
+            document.getElementById('defaultSidebar').style.display = 'none';
+            document.getElementById('claimsSidebar').style.display = 'none';
+            document.getElementById('shareSidebar').style.display = 'none';
+            document.getElementById('dpwhSidebar').style.display = 'none';
+            document.getElementById('monitoringSidebar').style.display = 'flex'; 
+            document.getElementById('monitoringSidebar').style.flexDirection = 'column';
+        }
+
+        function openDpwhSectionSidebar() {
+            document.getElementById('defaultSidebar').style.display = 'none';
+            document.getElementById('claimsSidebar').style.display = 'none';
+            document.getElementById('monitoringSidebar').style.display = 'none';
+            document.getElementById('shareSidebar').style.display = 'none';
+            document.getElementById('dpwhSidebar').style.display = 'flex';
+            document.getElementById('dpwhSidebar').style.flexDirection = 'column';
+        }
+
+        function backToMainSidebar() {
+            document.getElementById('claimsSidebar').style.display = 'none';
+            document.getElementById('monitoringSidebar').style.display = 'none';
+            document.getElementById('shareSidebar').style.display = 'none';
+            document.getElementById('dpwhSidebar').style.display = 'none';
+            document.getElementById('defaultSidebar').style.display = 'flex';
+        }
+
+        function toggleDropdown(listId) {
+            const targetList = document.getElementById(listId);
+            const menuHeader = targetList.previousElementSibling;
+            if (targetList.style.display === "flex") {
+                targetList.style.display = "none";
+                menuHeader.classList.remove("active");
+            } else {
+                targetList.style.display = "flex";
+                menuHeader.classList.add("active");
+            }
+        }
+
+        document.getElementById("searchInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); 
-                document.getElementById("loginPass").focus(); 
+                searchContract();       
             }
         });
-        
-        document.getElementById("loginPass").addEventListener("keypress", function(event) {
+
+        document.getElementById("searchEmployeeInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
-                handleLogin();
+                searchEmployee();
             }
         });
     </script>
