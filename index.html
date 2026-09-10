@@ -143,22 +143,30 @@
     <div class="login-box">
         <img src="logo.png" alt="Main CBPMA Logo" class="main-logo">
         
-        <div id="loginForm">
+        <form id="loginForm" autocomplete="off" onsubmit="event.preventDefault(); handleLogin();">
             <div class="input-group">
-                <input type="text" id="loginUser" placeholder="Username" required autocomplete="off">
+                <input type="text" id="loginUser" placeholder="Username" required autocomplete="new-password">
                 <i class='bx bx-user icon-right'></i>
             </div>
             
             <div class="input-group">
-                <input type="password" id="loginPass" placeholder="Password" required>
+                <input type="password" id="loginPass" placeholder="Password" required autocomplete="new-password">
                 <i class='bx bx-hide icon-right toggle-pass' id="eyeIcon" onclick="togglePassword()"></i>
             </div>
             
-            <button id="loginBtn" class="login-btn" onclick="handleLogin()">Sign In</button>
-        </div>
+            <button type="submit" id="loginBtn" class="login-btn">Sign In</button>
+        </form>
     </div>
 
     <script>
+        // Piliting i-clear ang text boxes tuwing naglo-load ang pahina
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginPass').value = '';
+            }, 50);
+        };
+
         function togglePassword() {
             const passInput = document.getElementById('loginPass');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -190,11 +198,9 @@
             }
 
             if (user === "Construction" && pass === "Dpwh2026") {
-                // I-clear muna ang input boxes bago lumipat ng pahina
                 userInput.value = "";
                 passInput.value = "";
 
-                // I-save sa sessionStorage at pumunta sa dashboard
                 sessionStorage.setItem('isLoggedIn', 'true');
                 window.location.replace("dashboard.html");
             } else {
@@ -204,20 +210,6 @@
                 alert("Maling Username o Password. Pakisubukan muli.");
             }
         }
-
-        document.getElementById("loginUser").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault(); 
-                document.getElementById("loginPass").focus(); 
-            }
-        });
-        
-        document.getElementById("loginPass").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                handleLogin();
-            }
-        });
     </script>
 </body>
 </html>
