@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBPMA Website</title>
     
-    <!-- CHECK LOGIN STATUS AGAD BAGO MAG-LOAD ANG DESIGN -->
+    <!-- Ibinalik sa localStorage para tumugma sa dashboard at iwas loop -->
     <script>
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            // Gumamit ng replace para hindi na pumasok sa history ang index.html kung logged in na
             window.location.replace("dashboard.html");
         }
     </script>
     
-    <!-- Idinagdag ang linyang ito para sa Favicon (Logo sa Tab) -->
     <link rel="icon" href="logo.png" type="image/png">
-    
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <style>
@@ -37,7 +34,6 @@
             overflow: hidden;
         }
 
-        /* --- PREMIUM GLASSMORPHISM LOGIN BOX W/ RUNNING LIGHT --- */
         .login-box {
             position: relative;
             z-index: 1;
@@ -51,7 +47,6 @@
             overflow: hidden; 
         }
 
-        /* Umiikot na ilaw sa likod (Running Light) */
         .login-box::before {
             content: '';
             position: absolute;
@@ -64,7 +59,6 @@
             z-index: -2;
         }
 
-        /* Inner glass background na pumapatong sa umiikot na ilaw */
         .login-box::after {
             content: '';
             position: absolute;
@@ -87,7 +81,6 @@
             100% { opacity: 1; transform: translateY(0); } 
         }
 
-        /* --- MAIN LOGO INSIDE THE LOGIN BOX --- */
         .main-logo {
             width: 400px; 
             max-width: 100%;
@@ -98,7 +91,6 @@
             border-radius: 12px; 
         }
 
-        /* --- INPUT FIELDS --- */
         .input-group { 
             position: relative; margin-bottom: 20px; text-align: left; 
         }
@@ -128,7 +120,6 @@
         .input-group i.toggle-pass { cursor: pointer; }
         .input-group i.toggle-pass:hover { color: #ffffff; }
 
-        /* --- BUTTON --- */
         .login-btn {
             width: 100%; 
             background: linear-gradient(135deg, #ea580c, #f97316); 
@@ -146,14 +137,11 @@
         }
 
         .login-btn:active { transform: translateY(1px); }
-
     </style>
 </head>
 <body>
 
     <div class="login-box">
-        
-        <!-- Main App Logo -->
         <img src="logo.png" alt="Main CBPMA Logo" class="main-logo">
         
         <div id="loginForm">
@@ -171,7 +159,6 @@
         </div>
     </div>
 
-    <!-- MGA SCRIPT PARA SA LOGIN FUNCTIONALITY -->
     <script>
         function togglePassword() {
             const passInput = document.getElementById('loginPass');
@@ -197,13 +184,14 @@
                 loginBox.style.animation = "none";
                 setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
                 
-                alert("Pakiusap, ilagay ang iyong Username at Password.");
+                alert("Username & Password is Incorrect!");
                 return;
             }
 
             if (user === "Construction" && pass === "Dpwh2026") {
+                // Ibinalik sa localStorage ang pag-save
                 localStorage.setItem('isLoggedIn', 'true');
-                window.location.replace("dashboard.html"); // Pinalitan din ng replace para mas smooth
+                window.location.replace("dashboard.html");
             } else {
                 loginBox.style.animation = "none";
                 setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
