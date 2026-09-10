@@ -1,10 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBPMA Website</title>
+    
+    <!-- CHECK LOGIN STATUS AGAD BAGO MAG-LOAD ANG DESIGN -->
+    <script>
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            // Gumamit ng replace para hindi na pumasok sa history ang index.html kung logged in na
+            window.location.replace("dashboard.html");
+        }
+    </script>
     
     <!-- Idinagdag ang linyang ito para sa Favicon (Logo sa Tab) -->
     <link rel="icon" href="logo.png" type="image/png">
@@ -164,11 +171,8 @@
         </div>
     </div>
 
+    <!-- MGA SCRIPT PARA SA LOGIN FUNCTIONALITY -->
     <script>
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = "dashboard.html";
-        }
-
         function togglePassword() {
             const passInput = document.getElementById('loginPass');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -199,7 +203,7 @@
 
             if (user === "Construction" && pass === "Dpwh2026") {
                 localStorage.setItem('isLoggedIn', 'true');
-                window.location.href = "dashboard.html";
+                window.location.replace("dashboard.html"); // Pinalitan din ng replace para mas smooth
             } else {
                 loginBox.style.animation = "none";
                 setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
