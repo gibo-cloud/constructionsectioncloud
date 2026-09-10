@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBPMA Website</title>
     
-    <!-- Ibinalik sa localStorage para tumugma sa dashboard at iwas loop -->
     <script>
         if (localStorage.getItem('isLoggedIn') === 'true') {
             window.location.replace("dashboard.html");
@@ -176,8 +175,10 @@
         }
 
         function handleLogin() {
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
+            const userInput = document.getElementById('loginUser');
+            const passInput = document.getElementById('loginPass');
+            const user = userInput.value.trim();
+            const pass = passInput.value.trim();
             const loginBox = document.querySelector('.login-box');
 
             if(user === "" || pass === "") {
@@ -189,7 +190,11 @@
             }
 
             if (user === "Construction" && pass === "Dpwh2026") {
-                // Ibinalik sa localStorage ang pag-save
+                // I-clear muna ang input boxes bago lumipat ng pahina
+                userInput.value = "";
+                passInput.value = "";
+
+                // I-save sa localStorage at pumunta sa dashboard
                 localStorage.setItem('isLoggedIn', 'true');
                 window.location.replace("dashboard.html");
             } else {
