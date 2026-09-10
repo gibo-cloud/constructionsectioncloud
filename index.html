@@ -6,7 +6,7 @@
     <title>CBPMA Website</title>
     
     <script>
-        if (localStorage.getItem('isLoggedIn') === 'true') {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
             window.location.replace("dashboard.html");
         }
     </script>
@@ -194,8 +194,8 @@
                 userInput.value = "";
                 passInput.value = "";
 
-                // I-save sa localStorage at pumunta sa dashboard
-                localStorage.setItem('isLoggedIn', 'true');
+                // I-save sa sessionStorage at pumunta sa dashboard
+                sessionStorage.setItem('isLoggedIn', 'true');
                 window.location.replace("dashboard.html");
             } else {
                 loginBox.style.animation = "none";
