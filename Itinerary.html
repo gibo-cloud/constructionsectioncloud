@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPWH - Itinerary of Travel Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; background-color: #f1f5f9; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+        }
+
+        /* Printable A4 Page Calibration */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            margin: 20px auto;
+            padding: 15mm 18mm 15mm 18mm;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+
+            /* Base Document Font: Times New Roman, 10pt */
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 10pt;
+            color: #000000;
+            line-height: 1.35;
+        }
+
+        .page-content {
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Forms Grid & Table Cell Formatting */
+        .grid-table {
+            border: 2px solid #000;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .grid-table th, .grid-table td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            font-size: 10pt;
+            vertical-align: middle;
+        }
+
+        .checkbox-box {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10pt;
+            line-height: 1;
+        }
+
+        /* CSS Print Mode Overrides */
+        @media print {
+            body { 
+                background: #ffffff !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print { 
+                display: none !important; 
+            }
+            .main-layout {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .preview-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .page {
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                padding: 15mm 18mm 15mm 18mm !important;
+                break-after: page;
+                page-break-after: always;
+                position: relative !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <!-- Top Navigation Controls Bar (No Print) -->
+    <header class="no-print bg-slate-900 text-white sticky top-0 z-50 border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-500 text-slate-950 p-2 rounded-lg font-black text-lg flex items-center justify-center">
+                    <i class="ph-bold ph-files"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-tight">Itinerary of Travel Generator</h1>
+                    <p class="text-xs text-slate-400">DPWH Southern Mindoro DEO</p>
+                </div>
+            </div>
+
+            <!-- Mode Switcher Tabs -->
+            <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
+                <button id="btnModeDriver" onclick="switchMode('driver')" class="px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow">
+                    <i class="ph-bold ph-steering-wheel text-sm"></i> Driver Itinerary
+                </button>
+                <button id="btnModePermanent" onclick="switchMode('permanent')" class="px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 text-slate-300 hover:text-white">
+                    <i class="ph-bold ph-calendar-check text-sm"></i> Permanent Itinerary
+                </button>
+                <button id="btnModeStaff" onclick="switchMode('staff')" class="px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 text-slate-300 hover:text-white">
+                    <i class="ph-bold ph-user-gear text-sm"></i> Standard Staff Itinerary
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 shadow transition-all active:scale-95">
+                    <i class="ph-bold ph-printer text-base"></i> Print / Save as PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-layout max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Control Pane (No Print) -->
+        <div class="no-print lg:col-span-4 space-y-5">
+
+            <!-- Active Dashboard Status Banner -->
+            <div id="modeBanner" class="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <i id="modeIcon" class="ph-bold ph-steering-wheel text-amber-600 text-lg"></i>
+                    <div>
+                        <div id="modeTitle" class="text-xs font-extrabold uppercase tracking-wider">Driver Dashboard Mode</div>
+                        <div id="modeSub" class="text-[11px] text-amber-700">3-Tier Signatory Layout (Requestor, Recommender, Approver)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel Details Pane -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2 border-b pb-2">
+                    <i class="ph-bold ph-calendar-blank text-blue-600"></i> Travel Details
+                </h2>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Travel Date</label>
+                    <input type="date" id="inputDate" value="2026-09-30" class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" onchange="updateForm()">
+                </div>
+
+                <!-- Destination Pickers (From / To) -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Destination (From)</label>
+                        <select id="pickerFrom" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 cursor-pointer" onchange="updateForm()">
+                            <option value="Pinamalayan">Pinamalayan</option>
+                            <option value="Gloria">Gloria</option>
+                            <option value="Bansud">Bansud</option>
+                            <option value="Bongabong">Bongabong</option>
+                            <option value="Roxas" selected>Roxas</option>
+                            <option value="Mansalay">Mansalay</option>
+                            <option value="Bulalacao">Bulalacao</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Destination (To)</label>
+                        <select id="pickerTo" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 cursor-pointer" onchange="updateForm()">
+                            <option value="Pinamalayan">Pinamalayan</option>
+                            <option value="Gloria">Gloria</option>
+                            <option value="Bansud">Bansud</option>
+                            <option value="Bongabong">Bongabong</option>
+                            <option value="Roxas">Roxas</option>
+                            <option value="Mansalay" selected>Mansalay</option>
+                            <option value="Bulalacao">Bulalacao</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Purpose</label>
+                    <textarea id="inputPurpose" rows="3" class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" oninput="updateForm()">Inspection of various Projects with COA</textarea>
+                </div>
+            </div>
+
+            <!-- Signatories Pickers Pane -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2 border-b pb-2">
+                    <i class="ph-bold ph-pen-nib text-blue-600"></i> Signatories Picker
+                </h2>
+                
+                <!-- Requestor Dropdown -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-800" id="labelRequestor">1. Requestor / Driver ("Very truly yours")</label>
+                    <select id="pickerRequestor" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 cursor-pointer" onchange="handleSignatoryChange()">
+                        <!-- Dynamic options loaded via JS -->
+                    </select>
+                </div>
+
+                <!-- Recommending Officer Dropdown (Shown in Driver and Permanent modes) -->
+                <div id="recommenderContainer" class="space-y-1.5 pt-2 border-t">
+                    <label class="block text-xs font-bold text-slate-800">2. Recommending Officer ("RECOMMENDED BY:")</label>
+                    <select id="pickerRecommender" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 cursor-pointer" onchange="handleSignatoryChange()">
+                        <option value="Emmanuel A. Manalaysay|Assistant District Engineer">Emmanuel A. Manalaysay - Assistant District Engineer</option>
+                        <option value="Alfredo J. Enriquez, Jr.|Chief, Construction Section">Alfredo J. Enriquez, Jr. - Chief, Construction Section</option>
+                        <option value="Ronald Christian L. Ferrera|Engineer II">Ronald Christian L. Ferrera - Engineer II</option>
+                        <option value="Oliver Wendell T. Llaet|Engineer II">Oliver Wendell T. Llaet - Engineer II</option>
+                        <option value="Marinelle R. Fetalsana|Engineer II">Marinelle R. Fetalsana - Engineer II</option>
+                        <option value="Portoso M. Castillo, Jr.|Engineer II">Portoso M. Castillo, Jr. - Engineer II</option>
+                        <option value="Dannah Cae G. Morales|Engineer II">Dannah Cae G. Morales - Engineer II</option>
+                        <option value="Dinky Jane V. Ibon-Arimado|Engineer II">Dinky Jane V. Ibon-Arimado - Engineer II</option>
+                        <option value="Almer C. Fortu|Timekeeper" selected>Almer C. Fortu - Timekeeper</option>
+                    </select>
+                </div>
+
+                <!-- Approving Officer Dropdown -->
+                <div class="space-y-1.5 pt-2 border-t">
+                    <label class="block text-xs font-bold text-slate-800" id="labelApprover">3. Approving Officer ("APPROVED BY:")</label>
+                    <select id="pickerApprover" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 cursor-pointer" onchange="handleSignatoryChange()">
+                        <option value="Alfredo J. Enriquez, Jr.|Chief, Construction Section" selected>Alfredo J. Enriquez Jr. - Chief, Construction Section</option>
+                        <option value="Emmanuel A. Manalaysay|Assistant District Engineer">Emmanuel A. Manalaysay - Assistant District Engineer</option>
+                        <option value="Annielyn E. Padullo|District Engineer">Annielyn E. Padullo - District Engineer</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Pane: Live Printable Document Preview -->
+        <div class="preview-container lg:col-span-8 flex justify-center">
+            <div>
+                <section class="page">
+
+                    <div class="page-content">
+                        
+                        <!-- Header Block: DP_2.png Logo + Centered DPWH Header Text -->
+                        <div class="flex items-center justify-between pb-2 mb-2">
+                            <div class="w-20 h-20 flex items-center justify-center shrink-0">
+                                <img src="DP_2.png" alt="DPWH Logo" class="w-20 h-20 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/80x80/020b66/ffffff?text=DPWH';">
+                            </div>
+                            <div class="text-center flex-1 px-2">
+                                <div class="text-[10pt] leading-tight font-normal">Republic of the Philippines</div>
+                                <div class="text-[10pt] leading-tight font-normal uppercase mt-0.5">DEPARTMENT OF PUBLIC WORKS AND HIGHWAYS</div>
+                                <div class="text-[10pt] font-bold tracking-wider uppercase mt-0.5">SOUTHERN MINDORO DISTRICT ENGINEERING OFFICE</div>
+                                <div class="text-[10pt] font-normal mt-0.5">Dangay, Roxas, Oriental Mindoro</div>
+                            </div>
+                            <div class="w-20 h-20 shrink-0"></div>
+                        </div>
+
+                        <!-- Document Title -->
+                        <div class="text-center my-3">
+                            <h1 id="docTitle" class="text-[12pt] font-bold tracking-wider uppercase inline-block">ITINERARY OF TRAVEL</h1>
+                        </div>
+
+                        <!-- Recipient & Document Date Section -->
+                        <div class="flex justify-between items-start my-3 text-[10pt]">
+                            <div class="space-y-0.5">
+                                <div class="font-normal">The District Engineer</div>
+                                <div class="font-normal">DPWH, Roxas, Oriental Mindoro</div>
+                            </div>
+                            <div class="text-right space-y-0.5 min-w-[150px]">
+                                <div id="dispDocDate" class="font-normal underline text-center">September 30, 2026</div>
+                                <div class="text-[9pt] font-bold text-center tracking-widest mt-0.5">DATE</div>
+                            </div>
+                        </div>
+
+                        <div class="text-[10pt] my-2">Ma'am,</div>
+
+                        <div class="text-[10pt] text-center my-3 leading-relaxed">
+                            I have the honor to request authority to travel for the period stated below:
+                        </div>
+
+                        <!-- Main Itinerary Table -->
+                        <table class="grid-table my-2">
+                            <thead>
+                                <tr class="text-center font-bold text-[10pt] bg-slate-50">
+                                    <th style="width: 22%;">DATE</th>
+                                    <th style="width: 14%;">TIME (Expected)<br>DEPARTURE<br><span class="font-normal text-[9pt]">AM</span></th>
+                                    <th style="width: 14%;">TIME (Expected)<br>ARRIVAL<br><span class="font-normal text-[9pt]">PM</span></th>
+                                    <th style="width: 25%;">DESTINATION</th>
+                                    <th style="width: 25%;">PURPOSE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-[10pt]" style="height: 140px;">
+                                    <td id="dispTravelDate" class="text-center align-middle px-2">September 30, 2026</td>
+                                    <td id="dispDeparture" class="text-center align-middle px-1"></td>
+                                    <td id="dispArrival" class="text-center align-middle px-1"></td>
+                                    <td id="dispDestination" class="text-center align-middle px-2 font-medium">Roxas - Mansalay</td>
+                                    <td id="dispPurpose" class="text-center align-middle px-2 leading-snug">Inspection of various Projects with COA</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Authorized Mode of Transportation Section -->
+                        <div class="mt-4 mb-6">
+                            <div class="text-[10pt] font-bold uppercase tracking-wide mb-2">AUTHORIZED MODE OF TRANSPORTATION</div>
+                            
+                            <div class="ml-6 space-y-2 text-[10pt]">
+                                <div class="flex items-center gap-3">
+                                    <div class="checkbox-box">✓</div>
+                                    <span>Official vehicle</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="checkbox-box"></div>
+                                    <span>Customary vehicle <span class="inline-block border-b border-black min-w-[120px] text-center px-1"></span></span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="checkbox-box"></div>
+                                    <span>Hire Motorcycle</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="checkbox-box"></div>
+                                    <span>Authorized to claim lodging allowance for <span class="font-bold underline px-1">&nbsp;&nbsp;&nbsp;&nbsp;</span> days</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Signatures Area -->
+                        <div class="mt-auto pb-2">
+                            
+                            <!-- DRIVER & PERMANENT LAYOUT (3 Tiers Staggered) -->
+                            <div id="sigLayoutDriver" class="space-y-6">
+                                <!-- Tier 1: Very truly yours (Top Right) -->
+                                <div class="flex justify-end">
+                                    <div class="text-center min-w-[260px]">
+                                        <div class="text-[10pt] mb-8 text-left">Very truly yours,</div>
+                                        <div id="drvRequestorName" class="font-bold text-[10pt] uppercase tracking-wide">EMILIO O. DELIN</div>
+                                        <div id="drvRequestorTitle" class="text-[10pt]">Administrative Aide I</div>
+                                    </div>
+                                </div>
+
+                                <!-- Tier 2: RECOMMENDED BY (Middle Left) -->
+                                <div class="flex justify-start">
+                                    <div class="text-left min-w-[260px]">
+                                        <div class="text-[10pt] font-bold mb-8 tracking-wide">RECOMMENDED BY:</div>
+                                        <div id="drvRecommenderName" class="font-bold text-[10pt] uppercase tracking-wide text-center">ALMER C. FORTU</div>
+                                        <div id="drvRecommenderTitle" class="text-[10pt] text-center">Timekeeper</div>
+                                    </div>
+                                </div>
+
+                                <!-- Tier 3: APPROVED BY (Bottom Right - Aligned with Requestor Block) -->
+                                <div class="flex justify-end">
+                                    <div class="text-left min-w-[260px]">
+                                        <div class="text-[10pt] font-bold mb-8 tracking-wide">APPROVED BY:</div>
+                                        <div id="drvApproverName" class="font-bold text-[10pt] uppercase tracking-wide text-center">ALFREDO J. ENRIQUEZ, JR.</div>
+                                        <div id="drvApproverTitle" class="text-[10pt] text-center">Chief, Construction Section</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STANDARD STAFF LAYOUT (2 Tiers) -->
+                            <div id="sigLayoutStaff" class="space-y-10 hidden">
+                                <!-- Requestor Signature Block (Top Right) -->
+                                <div class="flex justify-end">
+                                    <div class="text-center min-w-[260px]">
+                                        <div class="text-[10pt] mb-12 text-left">Very truly yours,</div>
+                                        <div id="stfRequestorName" class="font-bold text-[10pt] uppercase tracking-wide">JHOANNA CARLA P. RITO</div>
+                                        <div id="stfRequestorTitle" class="text-[10pt]">Project Development Officer II</div>
+                                    </div>
+                                </div>
+
+                                <!-- Approver Signature Block (Bottom Left) -->
+                                <div class="flex justify-start pt-2">
+                                    <div class="text-left min-w-[260px]">
+                                        <div class="text-[10pt] font-bold mb-10 tracking-wide">APPROVED BY:</div>
+                                        <div id="stfApproverName" class="font-bold text-[10pt] uppercase tracking-wide text-center">ALFREDO J. ENRIQUEZ, JR.</div>
+                                        <div id="stfApproverTitle" class="text-[10pt] text-center">Chief, Construction Section</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </section>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Live Dynamic Script -->
+    <script>
+        let currentMode = 'driver';
+
+        const driverRequestors = [
+            { name: "Emilio O. Delin", title: "Administrative Aide I" },
+            { name: "Isner Lester F. Sagarang", title: "Administrative Aide I" },
+            { name: "John Carlo P. Rito", title: "Administrative Aide I" },
+            { name: "Francisco A. De Guzman Jr.", title: "Administrative Aide I" },
+            { name: "Niño Paul B. Boo", title: "Administrative Aide I" },
+            { name: "Gelbert V. Macaraig", title: "Administrative Aide I" }
+        ];
+
+        const permanentRequestors = [
+{ name: "Alfredo J. Enriquez, Jr.", title: "Chief, Construction Section" },
+            { name: "Oliver Wendell T. Llaet", title: "Engineer II" },
+            { name: "Ronald Christian L. Ferrera", title: "Engineer II" },
+            { name: "Dinky Jane V. Ibon-Arimado", title: "Engineer II" },
+            { name: "Diosdado V. Romey", title: "Engineer II" },
+            { name: "Almer C. Fortu", title: "Engineer II" },
+            { name: "Maria Patricia Amor F. Faina", title: "Engineer II" },
+            { name: "Mary Grace T. Castillo", title: "Engineer II" },
+            { name: "Mark Angelo F. Abagat", title: "Engineer II" },
+            { name: "Portoso M. Castillo Jr.", title: "Engineer II" },
+            { name: "Dannah Cae G. Morales", title: "Engineer II" },
+            { name: "Marinelle R. Fetalsana", title: "Engineer II" },
+            { name: "Joe-Ed G. Gonzales", title: "Engineer II" },
+            { name: "Jomer A. Hernandez", title: "Engineer II" }
+        ];
+
+        const staffRequestors = [
+            
+            { name: "Jhoanna Carla P. Rito", title: "Project Development Officer II", default: true },
+            { name: "Abegail Marquez", title: "Project Development Officer II" },
+            { name: "Patrisha C. Madrona", title: "Project Development Officer II" },
+            { name: "Gilbert S. Aniel", title: "Administrative Aide VI" },
+            { name: "Godofredo M. Rubico, Jr.", title: "Administrative Aide VI" },
+            { name: "Mary Ruth O. De Guzman", title: "Project Development Officer I" },
+            { name: "Richard B. Gadon", title: "Administrative Aide VI" },
+            { name: "Charlene Laririt", title: "Administrative Aide VI" },
+            { name: "Norman T. Pereda", title: "Project Development Officer II" },
+            { name: "Juliet Colangoy", title: "Administrative Aide VI" }
+        ];
+
+        function populateRequestorDropdown() {
+            const picker = document.getElementById('pickerRequestor');
+            picker.innerHTML = '';
+            
+            let list;
+            if (currentMode === 'driver') {
+                list = driverRequestors;
+            } else if (currentMode === 'permanent') {
+                list = permanentRequestors;
+            } else {
+                list = staffRequestors;
+            }
+
+            list.forEach((item) => {
+                const opt = document.createElement('option');
+                opt.value = `${item.name}|${item.title}`;
+                opt.textContent = `${item.name} - ${item.title}`;
+                if (item.default) opt.selected = true;
+                picker.appendChild(opt);
+            });
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnDriver = document.getElementById('btnModeDriver');
+            const btnPermanent = document.getElementById('btnModePermanent');
+            const btnStaff = document.getElementById('btnModeStaff');
+            
+            const modeTitle = document.getElementById('modeTitle');
+            const modeSub = document.getElementById('modeSub');
+            const modeIcon = document.getElementById('modeIcon');
+            const modeBanner = document.getElementById('modeBanner');
+            const recommenderContainer = document.getElementById('recommenderContainer');
+            const labelRequestor = document.getElementById('labelRequestor');
+            const labelApprover = document.getElementById('labelApprover');
+            const sigLayoutDriver = document.getElementById('sigLayoutDriver');
+            const sigLayoutStaff = document.getElementById('sigLayoutStaff');
+            const docTitle = document.getElementById('docTitle');
+
+            // Reset buttons
+            btnDriver.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 text-slate-300 hover:text-white";
+            btnPermanent.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 text-slate-300 hover:text-white";
+            btnStaff.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 text-slate-300 hover:text-white";
+
+            if (mode === 'driver') {
+                btnDriver.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow";
+                
+                modeBanner.className = "bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm";
+                modeTitle.innerText = "Driver Dashboard Mode";
+                modeSub.innerText = "3-Tier Signatory Layout (Requestor, Recommender, Approver)";
+                modeIcon.className = "ph-bold ph-steering-wheel text-amber-600 text-lg";
+
+                recommenderContainer.classList.remove('hidden');
+                labelRequestor.innerText = "1. Requestor / Driver (\"Very truly yours\")";
+                labelApprover.innerText = "3. Approving Officer (\"APPROVED BY:\")";
+
+                sigLayoutDriver.classList.remove('hidden');
+                sigLayoutStaff.classList.add('hidden');
+                if (docTitle) docTitle.innerText = "ITINERARY OF TRAVEL";
+
+            } else if (mode === 'permanent') {
+                btnPermanent.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 bg-emerald-500 text-slate-950 shadow";
+
+                modeBanner.className = "bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm";
+                modeTitle.innerText = "Permanent Itinerary Dashboard Mode";
+                modeSub.innerText = "3-Tier Signatory Layout (Requestor, Recommender, Approver)";
+                modeIcon.className = "ph-bold ph-calendar-check text-emerald-600 text-lg";
+
+                recommenderContainer.classList.remove('hidden');
+                labelRequestor.innerText = "1. Requestor / Traveler (\"Very truly yours\")";
+                labelApprover.innerText = "3. Approving Officer (\"APPROVED BY:\")";
+
+                sigLayoutDriver.classList.remove('hidden');
+                sigLayoutStaff.classList.add('hidden');
+                if (docTitle) docTitle.innerText = "ITINERARY OF TRAVEL";
+
+            } else {
+                btnStaff.className = "px-3.5 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow";
+
+                modeBanner.className = "bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm";
+                modeTitle.innerText = "Standard Staff Dashboard Mode";
+                modeSub.innerText = "2-Tier Signatory Layout (Requestor, Approver)";
+                modeIcon.className = "ph-bold ph-user-gear text-blue-600 text-lg";
+
+                recommenderContainer.classList.add('hidden');
+                labelRequestor.innerText = "1. Requestor / Traveler (\"Very truly yours\")";
+                labelApprover.innerText = "2. Recommending / Approving Officer (\"APPROVED BY:\")";
+
+                sigLayoutDriver.classList.add('hidden');
+                sigLayoutStaff.classList.remove('hidden');
+                if (docTitle) docTitle.innerText = "ITINERARY OF TRAVEL";
+            }
+
+            populateRequestorDropdown();
+            handleSignatoryChange();
+        }
+
+        function formatDateString(dateVal) {
+            if (!dateVal) return '';
+            const parts = dateVal.split('-');
+            if (parts.length === 3) {
+                const year = parts[0];
+                const monthIndex = parseInt(parts[1], 10) - 1;
+                const day = parseInt(parts[2], 10);
+                const months = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                if (monthIndex >= 0 && monthIndex < 12) {
+                    return `${months[monthIndex]} ${day}, ${year}`;
+                }
+            }
+            return dateVal;
+        }
+
+        function updateForm() {
+            // Synchronize Date Input
+            const dateVal = document.getElementById('inputDate').value;
+            const formattedDate = formatDateString(dateVal);
+            document.getElementById('dispDocDate').innerText = formattedDate;
+            document.getElementById('dispTravelDate').innerText = formattedDate;
+
+            // Destination
+            const fromTown = document.getElementById('pickerFrom').value;
+            const toTown = document.getElementById('pickerTo').value;
+            document.getElementById('dispDestination').innerText = `${fromTown} - ${toTown}`;
+
+            document.getElementById('dispPurpose').innerText = document.getElementById('inputPurpose').value;
+        }
+
+        function handleSignatoryChange() {
+            // Requestor
+            const reqPicker = document.getElementById('pickerRequestor');
+            if (reqPicker.value) {
+                const parts = reqPicker.value.split('|');
+                const nameUpper = (parts[0] || '').toUpperCase();
+                const title = parts[1] || '';
+
+                if (currentMode === 'driver' || currentMode === 'permanent') {
+                    document.getElementById('drvRequestorName').innerText = nameUpper;
+                    document.getElementById('drvRequestorTitle').innerText = title;
+                } else {
+                    document.getElementById('stfRequestorName').innerText = nameUpper;
+                    document.getElementById('stfRequestorTitle').innerText = title;
+                }
+            }
+
+            // Recommender
+            const recPicker = document.getElementById('pickerRecommender');
+            if (recPicker.value && (currentMode === 'driver' || currentMode === 'permanent')) {
+                const parts = recPicker.value.split('|');
+                document.getElementById('drvRecommenderName').innerText = (parts[0] || '').toUpperCase();
+                document.getElementById('drvRecommenderTitle').innerText = parts[1] || '';
+            }
+
+            // Approver
+            const appPicker = document.getElementById('pickerApprover');
+            if (appPicker.value) {
+                const parts = appPicker.value.split('|');
+                const nameUpper = (parts[0] || '').toUpperCase();
+                const title = parts[1] || '';
+
+                if (currentMode === 'driver' || currentMode === 'permanent') {
+                    document.getElementById('drvApproverName').innerText = nameUpper;
+                    document.getElementById('drvApproverTitle').innerText = title;
+                } else {
+                    document.getElementById('stfApproverName').innerText = nameUpper;
+                    document.getElementById('stfApproverTitle').innerText = title;
+                }
+            }
+        }
+
+        // Initialize Form Values on Page Load
+        window.onload = function() {
+            populateRequestorDropdown();
+            updateForm();
+            handleSignatoryChange();
+        };
+    </script>
+</body>
+</html>
