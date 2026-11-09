@@ -568,7 +568,7 @@
             font-weight: 500;
         }
 
-        .robot-btn {
+        .robot-btn, .itinerary-btn {
             margin-right: 15px;
             display: flex;
             align-items: center;
@@ -582,12 +582,23 @@
             height: 35px;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
+        .itinerary-btn i {
+            font-size: 32px;
+            color: #ffd700;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            transition: color 0.3s ease;
+        }
+        .itinerary-btn:hover i {
+            color: #f39c12;
+        }
+
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
 
-        .robot-btn .robot-tooltip {
+        .robot-btn .robot-tooltip,
+        .itinerary-btn .itinerary-tooltip {
             visibility: hidden;
             background-color: #14376a;
             color: #ffd700;
@@ -609,7 +620,8 @@
             transition: opacity 0.3s, transform 0.3s;
         }
 
-        .robot-btn .robot-tooltip::after {
+        .robot-btn .robot-tooltip::after,
+        .itinerary-btn .itinerary-tooltip::after {
             content: "";
             position: absolute;
             top: 50%;
@@ -620,7 +632,8 @@
             border-color: transparent transparent transparent #f39c12;
         }
 
-        .robot-btn:hover .robot-tooltip {
+        .robot-btn:hover .robot-tooltip,
+        .itinerary-btn:hover .itinerary-tooltip {
             visibility: visible;
             opacity: 1;
         }
@@ -679,7 +692,7 @@
                 </div>
             </div>
 
-            <div class="contract-info-card" id="card-24EI0001">
+                      <div class="contract-info-card" id="card-24EI0001">
           <div class="info-group">
          <label>Contract ID:</label>
     <div class="info-value">24EI0001</div>
@@ -7624,7 +7637,6 @@
                 </div>
             </div>
 
-
         </div>
 
         <!-- SHARE FILES SIDEBAR -->
@@ -7893,6 +7905,11 @@
     <main class="main-wrapper">
         <nav class="top-navbar">
             
+            <a href="Itinerary.html" class="itinerary-btn">
+                <i class='bx bx-map-pin'></i>
+                <span class="itinerary-tooltip">Itinerary</span>
+            </a>
+
             <a href="https://character.ai/chat/ZGiFdYF4BXI2Tlg5Pzt0wIo4x1AXcfH2gkfDh0HL9Xk" class="robot-btn">
                 <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Robot">
                 <span class="robot-tooltip">Gibo AI Assistant</span>
@@ -8325,9 +8342,9 @@
             } else if ("RONALD CHRISTIAN FERRERA".includes(query) || query.includes("RONALD")) {
                 employeeFound = { name: "FERRERA, RONALD CHRISTIAN L.", position: "Engineer II", img: "ronald.png", link: "https://drive.google.com/drive/u/1/folders/1iflHX33P6eCDZOFc3i02XMCXjYWqPK6p" };
             } else if ("DINKY JANE IBON ARIMADO".includes(query) || query.includes("DINKY")) {
-                employeeFound = { name: "IBON-ARIMADO, DINKY JANE", position: "Engineer II", img: "dinx.png", link: "https://drive.google.com/drive/u/1/folders/14DGXq9PsvN9qTwDE6aIhQa5IGd4MI9Gc" };
-            } else if ("DIODADO ROMEY".includes(query) || query.includes("DIODADO") || query.includes("ROMEY")) {
-                employeeFound = { name: "ROMEY, DIODADO", position: "Engineer II", img: "dado.PNG", link: "https://drive.google.com/drive/u/1/folders/1RQnHMn4WP5tbPbdS1b1mXJfjf4az09D1" };
+                employeeFound = { name: "IBON-ARIMADO, DINKY JANE V.", position: "Engineer II", img: "dinx.png", link: "https://drive.google.com/drive/u/1/folders/14DGXq9PsvN9qTwDE6aIhQa5IGd4MI9Gc" };
+            } else if ("DIOSDADO ROMEY".includes(query) || query.includes("DIOSDADO") || query.includes("ROMEY")) {
+                employeeFound = { name: "ROMEY, DIOSDADO V.", position: "Engineer II", img: "dado.PNG", link: "https://drive.google.com/drive/u/1/folders/1RQnHMn4WP5tbPbdS1b1mXJfjf4az09D1" };
             } else if ("ALMER FORTU".includes(query) || query.includes("ALMER")) {
                 employeeFound = { name: "FORTU, ALMER C.", position: "Engineer II", img: "almer.png", link: "https://drive.google.com/drive/u/1/folders/1ZIdYqQ7xZ9TTMe5mYm1rDRzlGz3bPktW" };
             } else if ("MARIA PATRICIA AMOR FAINA".includes(query) || query.includes("PATRICIA")) {
@@ -8466,8 +8483,6 @@
             "Swa CTE Logbook - 2026": {
                 "January": "", "February": "", "March": "", "April": "", "May": "", "June": "", "July": "", "August": "", "September": "", "October": "", "November": "", "December": ""
             }
-            // Inalis na ang Materials Engineer at CHSP/Contract attachment rito 
-            // dahil hindi na sila dumadaan sa month modal.
         };
 
         let currentYearSelected = "";
@@ -8483,17 +8498,14 @@
             months.forEach(month => {
                 const linkElement = document.getElementById('link-' + month);
                 
-                // Kapag may naka-set na link sa database, i-a-apply ito
                 if (monthLinksData[yearTitle] && monthLinksData[yearTitle][month]) {
                     linkElement.href = monthLinksData[yearTitle][month];
-                    // '_self' para sa Iisang Tab lang mag-load (hindi sa new tab)
                     linkElement.target = "_self"; 
                 } else {
                     linkElement.href = "#"; 
                     linkElement.target = "_self";
                 }
 
-                // Function kapag kinlick ang buwan na wala pang link
                 linkElement.onclick = function(e) {
                     if (this.getAttribute('href') === "#") {
                         e.preventDefault();
