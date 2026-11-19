@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBPMA Website</title>
+    <title>CBPMA Website - Login</title>
     
     <script>
         if (sessionStorage.getItem('isLoggedIn') === 'true') {
-            window.location.replace("dashboard.html");
+            const role = sessionStorage.getItem('userRole');
+            window.location.replace(role === 'admin' ? "admin.html" : "dashboard.html");
         }
     </script>
     
     <link rel="icon" href="logo.png" type="image/png">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -39,6 +41,7 @@
             padding: 15px 40px 40px 40px; 
             border-radius: 24px; 
             width: 420px; 
+            max-width: 92vw;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); 
             color: #ffffff;
@@ -129,10 +132,15 @@
             margin-top: 10px;
         }
         
-        .login-btn:hover { 
+        .login-btn:hover:not(:disabled) { 
             background: linear-gradient(135deg, #c2410c, #ea580c); 
             box-shadow: 0 12px 25px rgba(234, 88, 12, 0.5); 
             transform: translateY(-3px); 
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .login-btn:active { transform: translateY(1px); }
@@ -159,7 +167,11 @@
     </div>
 
     <script>
-        // Piliting i-clear ang text boxes tuwing naglo-load ang pahina
+        // PALITAN ITO NG IYONG SUPABASE PROJECT CREDENTIALS
+        const SUPABASE_URL = 'https://okkmwpbdxvaebqxirbrf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_OiwdDRFM3dF2ZRtYyPuLVQ_we6bqg_5';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         window.onload = function() {
             setTimeout(function() {
                 document.getElementById('loginUser').value = '';
@@ -182,42 +194,67 @@
             }
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const userInput = document.getElementById('loginUser');
             const passInput = document.getElementById('loginPass');
+            const loginBtn = document.getElementById('loginBtn');
             const user = userInput.value.trim();
             const pass = passInput.value.trim();
             const loginBox = document.querySelector('.login-box');
 
-            if(user === "" || pass === "") {
-                loginBox.style.animation = "none";
-                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
-                
+            if (user === "" || pass === "") {
+                triggerShake(loginBox);
                 alert("Pakiusap, ilagay ang iyong Username at Password.");
                 return;
             }
 
-            if (user === "Construction" && pass === "Dpwh2026") {
-                userInput.value = "";
-                passInput.value = "";
+            loginBtn.disabled = true;
+            loginBtn.textContent = "Signing in...";
 
-                sessionStorage.setItem('isLoggedIn', 'true');
-                window.location.replace("dashboard.html");
-            } else {
-                loginBox.style.animation = "none";
-                setTimeout(() => { loginBox.style.animation = "slideUp 0.3s ease-out"; }, 10);
-                
-                alert("Maling Username o Password. Pakisubukan muli.");
+            try {
+                const { data, error } = await supabaseClient
+                    .from('app_users')
+                    .select('*')
+                    .eq('username', user)
+                    .eq('password', pass)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    userInput.value = "";
+                    passInput.value = "";
+
+                    // I-save ang session details ng nag-login na user
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userId', data.id);
+                    sessionStorage.setItem('username', data.username);
+                    sessionStorage.setItem('fullName', data.full_name || data.username);
+                    sessionStorage.setItem('userRole', data.role);
+
+                    // Kung admin, sa admin.html pupunta; kung regular user, sa dashboard.html
+                    if (data.role === 'admin') {
+                        window.location.replace("admin.html");
+                    } else {
+                        window.location.replace("dashboard.html");
+                    }
+                } else {
+                    triggerShake(loginBox);
+                    alert("Maling Username o Password. Pakisubukan muli.");
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+                alert("Nagkaroon ng problema sa pagkonekta sa database: " + err.message);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Sign In";
             }
         }
 
-        // Makikinig sa buong document kung pinindot ang "Enter" key
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault(); // Pipigilan ang page refresh
-                handleLogin();          // Tatawagin ang login function mo
-            }
-        });
+        function triggerShake(element) {
+            element.style.animation = "none";
+            setTimeout(() => { element.style.animation = "slideUp 0.3s ease-out"; }, 10);
+        }
     </script>
 </body>
 </html>
