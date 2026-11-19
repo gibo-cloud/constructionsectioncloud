@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBPMA - Administrator Panel</title>
+
+    <!-- Security Check: Admin lang ang pwedeng pumasok dito -->
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.replace("index.html");
+        } else if (sessionStorage.getItem('userRole') !== 'admin') {
+            window.location.replace("dashboard.html");
+        }
+    </script>
+
+    <link rel="icon" href="logo.png" type="image/png">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.92)), url('3.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #f8fafc;
+            padding: 25px;
+        }
+
+        .container { max-width: 1150px; margin: 0 auto; }
+
+        /* Top Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 15px 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 15px; }
+        .nav-brand img { height: 48px; border-radius: 8px; }
+        .nav-brand h1 { font-size: 18px; font-weight: 600; color: #fff; }
+        .nav-brand span { font-size: 12px; color: #f97316; font-weight: 500; }
+
+        .nav-actions { display: flex; gap: 10px; }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.25s;
+            text-decoration: none;
+        }
+
+        .btn-orange { background: linear-gradient(135deg, #ea580c, #f97316); color: #fff; }
+        .btn-orange:hover { background: linear-gradient(135deg, #c2410c, #ea580c); transform: translateY(-2px); }
+
+        .btn-slate { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.15); }
+        .btn-slate:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 6px 12px; font-size: 13px; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
+
+        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4); padding: 6px 12px; font-size: 13px; }
+        .btn-edit:hover { background: #3b82f6; color: #fff; }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card h2 {
+            font-size: 17px;
+            margin-bottom: 18px;
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 6px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #f97316; }
+        .form-group select option { background: #0f172a; color: #fff; }
+
+        /* Table */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 13px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; }
+        th { color: #94a3b8; font-weight: 500; font-size: 13px; text-transform: uppercase; }
+        tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-admin { background: rgba(249, 115, 22, 0.2); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.4); }
+        .badge-user { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+
+        /* Modal for Editing User */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: 18px;
+            padding: 25px;
+            width: 100%;
+            max-width: 420px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="navbar">
+            <div class="nav-brand">
+                <img src="logo.png" alt="Logo">
+                <div>
+                    <h1>CBPMA User Management</h1>
+                    <span>Administrator Control Panel</span>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn btn-slate"><i class='bx bx-grid-alt'></i> Open Dashboard</a>
+                <button onclick="logout()" class="btn btn-orange"><i class='bx bx-log-out'></i> Logout</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Form para gumawa ng bagong user -->
+            <div class="card">
+                <h2><i class='bx bx-user-plus'></i> Create New User</h2>
+                <form id="createUserForm" onsubmit="event.preventDefault(); createUser();">
+                    <div class="form-group">
+                        <label>Full Name / Personnel Name</label>
+                        <input type="text" id="newFullName" placeholder="e.g. Engr. Juan Dela Cruz" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="newUsername" placeholder="e.g. jdelacruz" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" id="newPassword" placeholder="Ilagay ang password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="newRole">
+                            <option value="user">Regular User</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="createBtn" class="btn btn-orange" style="width: 100%; justify-content: center; padding: 12px;">
+                        <i class='bx bx-plus-circle'></i> Create Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Listahan ng lahat ng users -->
+            <div class="card">
+                <h2><i class='bx bx-group'></i> Registered Web Users</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2 style="color:#f97316; font-size:17px; margin-bottom:15px;">Edit User Account</h2>
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editFullName" required>
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="editUsername" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" id="editPassword" required>
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select id="editRole">
+                    <option value="user">Regular User</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                <button type="button" onclick="closeEditModal()" class="btn btn-slate">Cancel</button>
+                <button type="button" onclick="saveUserChanges()" class="btn btn-orange">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PALITAN DIN ITO NG PAREHONG SUPABASE CREDENTIALS
+        const SUPABASE_URL = 'https://okkmwpbdxvaebqxirbrf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_OiwdDRFM3dF2ZRtYyPuLVQ_we6bqg_5';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const currentAdminId = sessionStorage.getItem('userId');
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+
+        async function loadUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            const { data, error } = await supabaseClient
+                .from('app_users')
+                .select('*')
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color:#fca5a5;">Error: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Walang nahanap na user.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(u => {
+                const isSelf = u.id === currentAdminId;
+                const badgeClass = u.role === 'admin' ? 'badge-admin' : 'badge-user';
+                return `
+                    <tr>
+                        <td>${escapeHtml(u.full_name || '-')}</td>
+                        <td><strong>${escapeHtml(u.username)}</strong></td>
+                        <td style="font-family: monospace; color: #cbd5e1;">${escapeHtml(u.password)}</td>
+                        <td><span class="badge ${badgeClass}">${u.role}</span></td>
+                        <td style="display:flex; gap:6px;">
+                            <button class="btn btn-edit" onclick='openEditModal(${JSON.stringify(u)})' title="Edit / Reset Password">
+                                <i class='bx bx-edit'></i>
+                            </button>
+                            ${!isSelf ? `
+                                <button class="btn btn-danger" onclick="deleteUser('${u.id}', '${escapeHtml(u.username)}')" title="Delete User">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            ` : `<span style="font-size:11px; color:#94a3b8; align-self:center;">(You)</span>`}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function createUser() {
+            const fullName = document.getElementById('newFullName').value.trim();
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const role = document.getElementById('newRole').value;
+            const btn = document.getElementById('createBtn');
+
+            btn.disabled = true;
+            btn.textContent = "Creating...";
+
+            const { error } = await supabaseClient
+                .from('app_users')
+                .insert([{ full_name: fullName, username: username, password: password, role: role }]);
+
+            btn.disabled = false;
+            btn.innerHTML = "<i class='bx bx-plus-circle'></i> Create Account";
+
+            if (error) {
+                if (error.code === '23505') {
+                    alert("Ginagamit na ang username na iyan. Pumili ng iba.");
+                } else {
+                    alert("Error sa paggawa ng user: " + error.message);
+                }
+                return;
+            }
+
+            document.getElementById('createUserForm').reset();
+            alert("Matagumpay na nagawa ang account ni " + username + "!");
+            loadUsers();
+        }
+
+        function openEditModal(user) {
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editFullName').value = user.full_name || '';
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editPassword').value = user.password;
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function saveUserChanges() {
+            const id = document.getElementById('editUserId').value;
+            const fullName = document.getElementById('editFullName').value.trim();
+            const username = document.getElementById('editUsername').value.trim();
+            const password = document.getElementById('editPassword').value.trim();
+            const role = document.getElementById('editRole').value;
+
+            if (!username || !password) {
+                alert("Hindi pwedeng blangko ang Username at Password.");
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('app_users')
+                .update({ full_name: fullName, username: username, password: password, role: role })
+                .eq('id', id);
+
+            if (error) {
+                alert("Error sa pag-update: " + error.message);
+                return;
+            }
+
+            closeEditModal();
+            loadUsers();
+        }
+
+        async function deleteUser(id, username) {
+            if (!confirm(`Sigurado ka bang gusto mong i-delete ang account ni "${username}"?`)) return;
+
+            const { error } = await supabaseClient
+                .from('app_users')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert("Error sa pag-delete: " + error.message);
+                return;
+            }
+
+            loadUsers();
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.replace("index.html");
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
