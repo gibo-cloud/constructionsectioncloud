@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBPMA Official Website</title>
     <link rel="icon" href="logo.png" type="image/png">
+    
+    <!-- PWA Meta Tags & Manifest -->
+    <meta name="theme-color" content="#1a4a8d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CBPMA">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./logo.png">
+
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
     <script>
@@ -157,6 +167,7 @@
             border: none;
             outline: none;
             font-size: 13px;
+            min-width: 0;
         }
 
         .search-input-group button {
@@ -170,6 +181,7 @@
             gap: 5px;
             font-weight: 500;
             transition: background 0.3s;
+            flex-shrink: 0;
         }
 
         .search-input-group button:hover {
@@ -191,7 +203,7 @@
         .info-group label { display: block; font-size: 12px; color: #f39c12; font-weight: 600; margin-bottom: 2px; }
         .info-group .info-value { font-size: 13px; color: #ffffff; font-weight: 400; line-height: 1.4; }
 
-        .action-buttons { display: flex; gap: 8px; margin-top: 20px; }
+        .action-buttons { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
         .action-buttons a {
             flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
             color: #fff; padding: 8px; border-radius: 4px; font-size: 13px; cursor: pointer;
@@ -216,6 +228,44 @@
             border-bottom: 2px solid #14376a;
         }
 
+        .pwa-nav-install-btn {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background-color: #f39c12;
+            color: #14376a;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-right: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            transition: 0.2s;
+        }
+
+        .pwa-nav-install-btn:hover {
+            background-color: #ffd700;
+            transform: translateY(-1px);
+        }
+
+        .mobile-brand {
+            display: none;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            margin-right: auto;
+        }
+
+        .mobile-nav-label {
+            display: none;
+            font-size: 12px;
+            color: #fff;
+            font-weight: 500;
+        }
+
         .dropdown {
             position: relative;
             display: inline-block;
@@ -238,6 +288,7 @@
             display: none;
             position: absolute;
             right: 0;
+            top: 100%;
             background-color: #ffffff;
             min-width: 250px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
@@ -264,8 +315,14 @@
             padding-left: 20px;
         }
 
-        .dropdown:hover .dropdown-content {
+        .dropdown.open .dropdown-content {
             display: block;
+        }
+
+        @media (hover: hover) {
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
         }
 
         .content-area {
@@ -298,9 +355,10 @@
             top: 0; 
             width: 100%; 
             height: 100%; 
-            background-color: rgba(0, 0, 0, 0.5); 
+            background-color: rgba(0, 0, 0, 0.6); 
             align-items: center; 
             justify-content: center;
+            padding: 15px;
         }
 
         .modal-box {
@@ -311,11 +369,18 @@
             padding: 35px 25px 25px 25px; 
             border-radius: 14px; 
             width: 350px; 
+            max-width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
             text-align: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
             color: white;
-            overflow: hidden;
             z-index: 1;
+        }
+
+        .modal-box h2 {
+            font-size: 18px;
+            line-height: 1.3;
         }
 
         .modal-box::before {
@@ -365,9 +430,11 @@
 
         .modal-close {
             position: absolute; 
-            top: 12px; 
-            right: 18px; 
-            font-size: 24px; 
+            top: 8px; 
+            right: 14px; 
+            font-size: 28px; 
+            line-height: 1;
+            padding: 4px 8px;
             cursor: pointer; 
             color: #a0aec0;
             transition: 0.3s;
@@ -410,6 +477,7 @@
 
         .folder-modal-box {
             width: 420px !important;
+            max-width: 100% !important;
             text-align: left !important;
         }
 
@@ -491,8 +559,9 @@
             color: white;
             font-size: 20px;
             cursor: pointer;
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -554,7 +623,7 @@
         .dropdown-list li a {
             background: rgba(255, 255, 255, 0.9);
             color: #333;
-            padding: 8px 12px;
+            padding: 10px 12px;
             font-size: 12px;
             border-radius: 4px;
             text-decoration: none;
@@ -578,6 +647,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
             animation: float 2s ease-in-out infinite;
             text-decoration: none;
             position: relative;
@@ -666,6 +736,155 @@
         .sidebar-share-result h3 { color: #ffd700; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
         .sidebar-share-result p { font-size: 12px; margin-bottom: 15px; color: #e0e0e0; }
 
+        /* =========================================
+           MOBILE RESPONSIVE STYLES (CELLPHONE VIEW)
+           ========================================= */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            .main-wrapper {
+                display: contents;
+            }
+
+            .top-navbar {
+                order: 1;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                width: 100%;
+                height: 56px;
+                padding: 0 14px;
+                justify-content: flex-end;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            }
+
+            .mobile-brand {
+                display: block;
+            }
+
+            .pwa-nav-install-btn {
+                margin-right: 10px;
+                padding: 5px 9px;
+                font-size: 11px;
+            }
+
+            .mobile-nav-label {
+                display: inline;
+            }
+
+            .itinerary-btn, .robot-btn {
+                margin-right: 12px;
+                animation: none;
+            }
+
+            .itinerary-btn i {
+                font-size: 24px;
+            }
+
+            .robot-btn img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .robot-tooltip, .itinerary-tooltip {
+                display: none !important;
+            }
+
+            .dropbtn {
+                font-size: 14px;
+                padding: 10px 6px;
+            }
+
+            .dropdown-content {
+                right: 0;
+                min-width: 220px;
+            }
+
+            .sidebar-container {
+                order: 2;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 3px solid #14376a;
+                overflow-y: visible;
+                flex-shrink: 0;
+            }
+
+            #defaultSidebar, #claimsSidebar, #monitoringSidebar, #shareSidebar, #dpwhSidebar {
+                height: auto;
+            }
+
+            .claims-menu-container {
+                padding: 15px;
+                overflow-y: visible;
+            }
+
+            .search-input-group input,
+            .search-select {
+                font-size: 16px;
+            }
+
+            .search-input-group button {
+                padding: 0 18px;
+                font-size: 14px;
+            }
+
+            /* MOBILE VIDEO FIT: 16:9 ratio para buo ang video mula kaliwa hanggang kanan */
+            .content-area {
+                order: 3;
+                flex: none;
+                width: 100%;
+                height: auto;
+                min-height: unset;
+                aspect-ratio: 16 / 9;
+                background-color: #000;
+                overflow: hidden;
+            }
+
+            .bg-video {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+                opacity: 1;
+            }
+
+            .modal-box,
+            .folder-modal-box,
+            #monthModal .modal-box {
+                width: 92% !important;
+                max-width: 400px !important;
+                padding: 32px 18px 20px 18px;
+            }
+
+            .folder-body {
+                padding: 14px 15px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .mobile-nav-label {
+                display: none;
+            }
+            .profile-section {
+                padding: 14px 14px 36px 14px;
+                gap: 10px;
+            }
+            .user-details .name {
+                font-size: 13px;
+            }
+            .user-details .office {
+                font-size: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -697,7 +916,8 @@
                 </div>
             </div>
 
-                      <div class="contract-info-card" id="card-24EI0001">
+            <!--dito mo lagay-->
+ <div class="contract-info-card" id="card-24EI0001">
           <div class="info-group">
          <label>Contract ID:</label>
     <div class="info-value">24EI0001</div>
@@ -7642,7 +7862,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> 
 
         <!-- SHARE FILES SIDEBAR -->
         <div id="shareSidebar">
@@ -7807,7 +8027,6 @@
                                 </ul>
                             </li>
                             <li>
-                                <!-- MATERIALS ENGINEER SECTION EDITED -->
                                 <div class="menu-header" onclick="toggleDropdown('list-mateng')" style="background: rgba(255,255,255,0.9); color: #333; font-size: 12px; padding: 8px 12px;">
                                     <div class="menu-header-left"><i class='bx bx-hard-hat'></i> Materials Engineer</div>
                                     <i class='bx bx-chevron-down dropdown-icon'></i>
@@ -7909,31 +8128,39 @@
     <!-- RIGHT MAIN AREA -->
     <main class="main-wrapper">
         <nav class="top-navbar">
+            <span class="mobile-brand">CBPMA</span>
+
+            <button type="button" id="pwaInstallBtn" class="pwa-nav-install-btn" onclick="installCBPMA()" title="Install CBPMA App">
+                <i class='bx bx-download'></i>
+                <span>Install App</span>
+            </button>
             
             <a href="Itinerary.html" class="itinerary-btn">
                 <i class='bx bx-map-pin'></i>
+                <span class="mobile-nav-label">Itinerary</span>
                 <span class="itinerary-tooltip">Itinerary</span>
             </a>
 
             <a href="https://character.ai/chat/ZGiFdYF4BXI2Tlg5Pzt0wIo4x1AXcfH2gkfDh0HL9Xk" class="robot-btn">
                 <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Robot">
+                <span class="mobile-nav-label">Gibo AI</span>
                 <span class="robot-tooltip">Gibo AI Assistant</span>
             </a>
 
-            <div class="dropdown">
-                <button class="dropbtn">Home <i class='bx bxs-down-arrow' style='font-size: 12px;'></i></button>
+            <div class="dropdown" id="homeDropdown">
+                <button class="dropbtn" onclick="toggleHomeDropdown(event)">Home <i class='bx bxs-down-arrow' style='font-size: 12px;'></i></button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="openDatabaseModal(); return false;"><i class='bx bx-data'></i> Database</a>
-                    <a href="#" onclick="openProjectMonitoringModal(); return false;"><i class='bx bx-line-chart'></i> Project Monitoring</a>
-                    <a href="#" onclick="openDpwhSectionSidebar(); return false;"><i class='bx bx-buildings'></i> DPWH Section</a>
-                    <a href="#" onclick="openOthersModal(); return false;"><i class='bx bx-folder-open'></i> Other Files</a>
-                    <a href="#" onclick="openShareSidebar(); return false;"><i class='bx bx-share-alt'></i> Share Files</a>
+                    <a href="#" onclick="closeHomeDropdown(); openDatabaseModal(); return false;"><i class='bx bx-data'></i> Database</a>
+                    <a href="#" onclick="closeHomeDropdown(); openProjectMonitoringModal(); return false;"><i class='bx bx-line-chart'></i> Project Monitoring</a>
+                    <a href="#" onclick="closeHomeDropdown(); openDpwhSectionSidebar(); return false;"><i class='bx bx-buildings'></i> DPWH Section</a>
+                    <a href="#" onclick="closeHomeDropdown(); openOthersModal(); return false;"><i class='bx bx-folder-open'></i> Other Files</a>
+                    <a href="#" onclick="closeHomeDropdown(); openShareSidebar(); return false;"><i class='bx bx-share-alt'></i> Share Files</a>
                 </div>
             </div>
         </nav>
 
         <div class="content-area">
-            <video autoplay loop muted playsinline class="bg-video">
+            <video id="bgVideo" autoplay loop muted playsinline webkit-playsinline preload="auto" class="bg-video">
                 <source src="kiba.mp4" type="video/mp4">
             </video>
         </div>
@@ -7941,7 +8168,7 @@
 
     <!-- ================= MODALS SECTION ================= -->
 
-    <!-- ================= MONITORING YEAR MODALS (NEWLY ADDED) ================= -->
+    <!-- ================= MONITORING YEAR MODALS ================= -->
     <div id="form02Modal" class="modal-overlay">
         <div class="modal-box">
             <span class="modal-close" onclick="closeMonitoringYearModal('form02Modal')">&times;</span>
@@ -8174,7 +8401,7 @@
         </div>
     </div>
 
-    <!-- CSHP MONITORING YEAR MODAL (2025-2026) EDITED -->
+    <!-- CSHP MONITORING YEAR MODAL (2025-2026) -->
     <div id="cshpYearModal" class="modal-overlay">
         <div class="modal-box">
             <span class="modal-close" onclick="closeCshpYearModal()">&times;</span>
@@ -8186,7 +8413,7 @@
         </div>
     </div>
 
-    <!-- CONTRACT ATTACHMENT YEAR MODAL (2025-2026) EDITED -->
+    <!-- CONTRACT ATTACHMENT YEAR MODAL (2025-2026) -->
     <div id="contractAttachmentYearModal" class="modal-overlay">
         <div class="modal-box">
             <span class="modal-close" onclick="closeContractAttachmentYearModal()">&times;</span>
@@ -8305,9 +8532,57 @@
 
     <!-- ================= JAVASCRIPT ================= -->
     <script>
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'none';
+        });
+
+        async function installCBPMA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('pwaInstallBtn').style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch((err) => {
+                    console.warn('Service Worker registration failed:', err);
+                });
+            });
+        }
+
         function handleLogout() {
             sessionStorage.removeItem('isLoggedIn');
             window.location.replace("index.html");
+        }
+
+        function toggleHomeDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('homeDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function closeHomeDropdown() {
+            const dropdown = document.getElementById('homeDropdown');
+            if (dropdown) dropdown.classList.remove('open');
+        }
+
+        function scrollToTopMobile() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
         function searchContract() {
@@ -8322,6 +8597,7 @@
             const targetCard = document.getElementById('card-' + searchValue);
             if (targetCard) {
                 targetCard.style.display = "block";
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 alert("No project found");
             }
@@ -8439,9 +8715,10 @@
             
             document.getElementById('shareSidebar').style.display = 'flex';
             document.getElementById('shareSidebar').style.flexDirection = 'column';
+            scrollToTopMobile();
         }
 
-        /* --- NEW JS FUNCTIONS FOR MONITORING YEAR MODALS --- */
+        /* --- JS FUNCTIONS FOR MONITORING YEAR MODALS --- */
         function openMonitoringYearModal(modalId) {
             closeDatabaseModal();
             closeProjectMonitoringModal();
@@ -8451,7 +8728,6 @@
         function closeMonitoringYearModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
-        /* --------------------------------------------------- */
 
         /* --- JS FUNCTIONS FOR CLAIMS YEAR MODALS --- */
         function openClaimsYearModal(modalId) {
@@ -8463,7 +8739,6 @@
         function closeClaimsYearModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
-        /* ---------------------------------------------- */
 
         // ================= DATABASE PARA SA MGA MONTHLY LINKS =================
         const monthLinksData = {
@@ -8564,6 +8839,7 @@
             document.getElementById('dpwhSidebar').style.display = 'none';
             document.getElementById('claimsSidebar').style.display = 'flex'; 
             document.getElementById('claimsSidebar').style.flexDirection = 'column';
+            scrollToTopMobile();
         }
 
         function openMonitoringUnit() {
@@ -8574,6 +8850,7 @@
             document.getElementById('dpwhSidebar').style.display = 'none';
             document.getElementById('monitoringSidebar').style.display = 'flex'; 
             document.getElementById('monitoringSidebar').style.flexDirection = 'column';
+            scrollToTopMobile();
         }
 
         function openDpwhSectionSidebar() {
@@ -8583,6 +8860,7 @@
             document.getElementById('shareSidebar').style.display = 'none';
             document.getElementById('dpwhSidebar').style.display = 'flex';
             document.getElementById('dpwhSidebar').style.flexDirection = 'column';
+            scrollToTopMobile();
         }
 
         function backToMainSidebar() {
@@ -8591,6 +8869,7 @@
             document.getElementById('shareSidebar').style.display = 'none';
             document.getElementById('dpwhSidebar').style.display = 'none';
             document.getElementById('defaultSidebar').style.display = 'flex';
+            scrollToTopMobile();
         }
 
         function toggleDropdown(listId) {
@@ -8605,6 +8884,17 @@
             }
         }
 
+        // Close Home dropdown or Modal when tapping outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('homeDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('open');
+            }
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.style.display = 'none';
+            }
+        });
+
         document.getElementById("searchInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); 
@@ -8618,6 +8908,24 @@
                 searchEmployee();
             }
         });
+
+        // Force video autoplay on mobile browsers
+        const bgVideo = document.getElementById('bgVideo');
+        if (bgVideo) {
+            bgVideo.defaultMuted = true;
+            bgVideo.muted = true;
+            bgVideo.play().catch(() => {
+                const startVideoOnTouch = () => {
+                    bgVideo.defaultMuted = true;
+                    bgVideo.muted = true;
+                    bgVideo.play();
+                    document.removeEventListener('touchstart', startVideoOnTouch);
+                    document.removeEventListener('click', startVideoOnTouch);
+                };
+                document.addEventListener('touchstart', startVideoOnTouch, { passive: true });
+                document.addEventListener('click', startVideoOnTouch);
+            });
+        }
     </script>
 </body>
 </html>
