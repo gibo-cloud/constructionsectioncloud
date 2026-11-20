@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBPMA Website - Login</title>
     
+    <!-- PWA Meta Tags & Manifest -->
+    <meta name="theme-color" content="#1a4a8d">
+    <meta name="description" content="Cloud-Based Project Management Application - Construction Section SMDEO">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CBPMA">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./logo.png">
+
     <script>
         if (sessionStorage.getItem('isLoggedIn') === 'true') {
             const role = sessionStorage.getItem('userRole');
@@ -144,6 +154,30 @@
         }
 
         .login-btn:active { transform: translateY(1px); }
+
+        .install-pwa-btn {
+            display: none;
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(26, 74, 141, 0.8);
+            color: #ffd700;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .install-pwa-btn:hover {
+            background: #1a4a8d;
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -163,6 +197,11 @@
             </div>
             
             <button type="submit" id="loginBtn" class="login-btn">Sign In</button>
+
+            <button type="button" id="pwaInstallBtn" class="install-pwa-btn" onclick="installCBPMA()">
+                <i class='bx bx-download' style="font-size: 18px;"></i>
+                <span>Install CBPMA App</span>
+            </button>
         </form>
     </div>
 
@@ -172,11 +211,42 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_OiwdDRFM3dF2ZRtYyPuLVQ_we6bqg_5';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'none';
+        });
+
+        async function installCBPMA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('pwaInstallBtn').style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+
         window.onload = function() {
             setTimeout(function() {
                 document.getElementById('loginUser').value = '';
                 document.getElementById('loginPass').value = '';
             }, 50);
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch((err) => {
+                    console.warn('Service Worker registration failed:', err);
+                });
+            }
         };
 
         function togglePassword() {
